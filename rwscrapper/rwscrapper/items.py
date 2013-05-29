@@ -1,11 +1,10 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# http://doc.scrapy.org/topics/items.html
-
 from scrapy.item import Item, Field
 
-class RwscrapperItem(Item):
-    # define the fields for your item here like:
-    # name = Field()
+class RWScrapperItem(Item):
+    """
+    Page raw text
+    """
+    text = Field()
+    url = Field()
+    canonical_url = Field()
     pass

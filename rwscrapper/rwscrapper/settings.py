@@ -13,3 +13,7 @@ SPIDER_MODULES = ['rwscrapper.spiders']
 NEWSPIDER_MODULE = 'rwscrapper.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
+RWSPIDER_NAME = 'rw_spider'
+START_SEED_FILE = 'rwscrapper/config/seed.txt'
+ALLOWED_DOMAINS_FILE = 'rwscrapper/config/allowed_domains.txt'
+ITEM_PIPELINES = ['rwscrapper.pipelines.RomanianTextFilterPipeline']

@@ -1,10 +1,11 @@
 """
 Function used to process urls
 """
-
 from urlparse import urlsplit, urlunsplit, parse_qsl
 from urllib import urlencode
 import urlnorm
+
+SINGLE_LINE_COMMENT_TOKEN = '#'
 
 def canonize_url(url):
     """
@@ -24,6 +25,36 @@ def canonize_url(url):
         return urlunsplit((split.scheme, split.netloc, path, query_string, ''))
     except urlnorm.InvalidUrl:
         return ''
+
+def get_start_urls(file_name):
+    """
+    Return a list of start urls from a file
+    """
+    try:
+        file_handle = open(file_name, 'r')
+        start_urls = []
+        for line in file_handle:
+            if not line.startswith(SINGLE_LINE_COMMENT_TOKEN):
+                crt_url = canonize_url(line.strip())
+                if crt_url:
+                    start_urls.append(crt_url)
+        return start_urls
+    except IOError:
+        return []
+
+def get_allowed_domains(file_name):
+    """
+    Return a list of allowed domains from a file
+    """
+    try:
+        file_handle = open(file_name, 'r')
+        allowed_domains = []
+        for line in file_handle:
+            if not line.startswith(SINGLE_LINE_COMMENT_TOKEN):
+                allowed_domains.append(line.strip())
+        return allowed_domains
+    except IOError:
+        return []
 
 if __name__ == '__main__':
     print "TEST 1"
@@ -55,3 +86,11 @@ if __name__ == '__main__':
     print 'URL: ', URL
     print 'NORMALIZED: ', canonize_url(URL)
     print '-----------------------------'
+
+    print "TEST 6"
+    start_seed_file = 'config/seed.txt'
+    print get_start_urls(start_seed_file)
+
+    print "TEST 7"
+    allowed_domains = 'config/allowed_domains.txt'
+    print get_allowed_domains(allowed_domains)

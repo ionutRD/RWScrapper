@@ -1,0 +1,10 @@
+# The list of allowed domains
+arpa
+biz
+com
+info
+md
+name
+net
+org
+ro
