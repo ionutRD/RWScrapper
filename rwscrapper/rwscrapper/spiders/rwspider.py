@@ -3,6 +3,8 @@ Module responsible for downloading the html content
 """
 import os
 import tempfile
+import threading
+from datetime import datetime
 
 from rwscrapper.settings import *
 from rwscrapper.crawl.urlutil import *
@@ -12,6 +14,8 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 
 HTML_TO_TEXT_XPATH = "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]"
+
+spider_lock = threading.Lock()
 
 class RWSpider(CrawlSpider):
     """
@@ -36,9 +40,17 @@ class RWSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         items = []
         item = RWScrapperItem()
-        item['text'] = hxs.select(HTML_TO_TEXT_XPATH).extract()
+        item['raw_text'] = hxs.select(HTML_TO_TEXT_XPATH).extract()
         item['url'] = str(response.url)
         item['canonical_url'] = canonize_url(item['url'])
+        item['timestamp'] = datetime.now()
+        spider_lock.acquire()
+        try:
+            item['total_pages'] += 1
+        except KeyError:
+            item['total_pages'] = 0
+        finally:
+            spider_lock.release()
         items.append(item)
         return items
 
@@ -53,12 +65,19 @@ class RWSpider(CrawlSpider):
             file_handle = tempfile.NamedTemporaryFile(delete=False)
             file_handle.write(response.body)
             file_handle.close()
-            item['text'] = pdf_to_string(file_handle.name)
-            if not item['text']:
+            item['raw_text'] = pdf_to_string(file_handle.name)
+            if not item['raw_text']:
                 os.unlink(file_handle.name)
                 return []
             item['url'] = str(response.url)
             item['canonical_url'] = canonize_url(item['url'])
+            item['timestamp'] = datetime.now()
+            try:
+                item['total_pages'] += 1
+            except KeyError:
+                item['total_pages'] = 0
+            finally:
+                spider_lock.release()
             os.unlink(file_handle.name)
             return items
         except IOError:
@@ -70,8 +89,15 @@ class RWSpider(CrawlSpider):
         """
         items = []
         item = RWScrapperItem()
-        item['text'] = response.body
+        item['raw_text'] = response.body
         item['url'] = str(respose.url)
         item['canonical_url'] = canonize_url(item['url'])
+        item['timestamp'] = datetime.now()
+        try:
+            item['total_pages'] += 1
+        except KeyError:
+            item['total_pages'] = 0
+        finally:
+            spider_lock.release()
         item.append(item)
         return items

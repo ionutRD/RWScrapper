@@ -10,6 +10,7 @@ http://www.romanianvoice.com/poezii/
 http://www.poezii.citatepedia.ro/
 http://www.poezie.ro/index.php
 http://www.poezii.biz/
+http://www.poezii.md/
 http://www.povesti-pentru-copii.com/poezii-pentru-copii.html
 http://www.poeziisiversuri.com/
 http://www.poezii-noi.ro/
@@ -21,7 +22,12 @@ http://www.reteaualiterara.ning.com/
 http://www.amprenteliterare.ning.com/
 http://www.convorbiri-literare.dntis.ro/
 http://www.romlit.ro/
+http://www.samanatorul.ro/
+http://www.tismana.ro/
+http://www.literaturasiarta.md/
+http://noualiteratura.wordpress.com/
 http://autori.citatepedia.ro/
+
 
 # Mass Media
 http://www.dilemaveche.ro/
@@ -117,11 +123,13 @@ http://www.bcev.ro/
 http://www.adventist.ro/
 http://www.maranataarad.ro/index.php?lang=en/
 http://www.uniuneabaptista.ro/
+http://www.nouasperanta.ro/
 http://www.cultulpenticostal.ro/
 http://www.ber.ro/
 http://www.cultereligioase0000.webs.com/unitarieni.htm/
 http://www.teologie.do.am/
-http://budism.ro/
+http://www.budism.ro/
+http://ro.orthodoxwiki.org/
 
 # Blogs
 http://poeziicatalindumitrean.blogspot.ro/
@@ -129,9 +137,25 @@ http://poeziilaprimamana.wordpress.com/
 http://transcedentalia.blogspot.ro/
 http://www.toateblogurile.ro/
 http://despreneamulromanesc.wordpress.com/
+http://dorinstef.blog.com/
+http://tomegea.wordpress.com/
+http://tiparituriromanesti.wordpress.com/
+http://silviutzzz.wordpress.com/
+http://mateicelmic.blogspot.ro/
+http://nosia.wordpress.com/
+http://ceicunoi.wordpress.com/
 
 # Miscellaneous
 http://www.trafic.ro/
+http://www.cartiaz.ro/
+http://moldova.go.ro/
+http://www.culmeaprostiei.ro/
+http://www.moldovenii.md/
+http://book.info.md/
+http://www.opinii.md/
+http://www.tocilar.ro/
+http://dli.ro/
+http://www.ghidul-pescarului.ro/
 
 # Encyclopedy
 http://ro.wikipedia.org/wiki/Pagina_principală/
@@ -140,3 +164,36 @@ http://www.descopera.ro/
 
 # Dictionaries
 http://ro.wiktionary.org/wiki/Pagina_principală
+http://www.dictionarmedicalonline.ro/
+http://www.dictio.ro/
+http://www.dictionar.net/
+http://www.dictionar-medical.ro/
+http://www.dictionare-online.ro/
+http://www.dex-tex.info/
+http://www.dictionarweb.com/
+http://www.dictionarculinar.ro/
+
+# Medicine
+http://www.sfatulmedicului.ro/
+http://www.pcfarm.ro/
+http://www.medikal.ro/
+http://www.sfaturimedicale.ro/
+http://sanatate.bzi.ro/
+http://www.dentist.ro/
+http://www.apifitoterapie.ro/
+http://ancuta.ucoz.ro/
+http://www.romedic.ro/
+
+# Romanian Language
+http://scri.ro/
+http://www.regionalisme.ro/
+http://www.dracones.ro/
+http://limbaromana.md/
+http://biblior.net/
+
+# Art
+http://artspace.ro/
+
+# Gastronomy
+http://www.eculinar.ro/
+http://www.ghid-culinar.ro/

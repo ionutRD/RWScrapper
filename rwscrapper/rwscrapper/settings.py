@@ -6,14 +6,30 @@
 #     http://doc.scrapy.org/topics/settings.html
 #
 
+# Bot name and version
 BOT_NAME = 'rwscrapper'
 BOT_VERSION = '1.0'
 
+# Spiders directory
 SPIDER_MODULES = ['rwscrapper.spiders']
 NEWSPIDER_MODULE = 'rwscrapper.spiders'
 USER_AGENT = '%s/%s' % (BOT_NAME, BOT_VERSION)
 
+# Spider name
 RWSPIDER_NAME = 'rw_spider'
+
+# Spider initial seed file
 START_SEED_FILE = 'rwscrapper/config/seed.txt'
+
+# Spider allowed domanins file
 ALLOWED_DOMAINS_FILE = 'rwscrapper/config/allowed_domains.txt'
-ITEM_PIPELINES = ['rwscrapper.pipelines.RomanianTextFilterPipeline']
+
+# Spider pipelines
+ITEM_PIPELINES = [
+    'rwscrapper.pipelines.NormalizeTextPipeline',
+    'rwscrapper.pipelines.RomanianTextPipeline',
+]
+
+# Warning messages
+NORMALIZED_TEXT_VOID = "Item dropped due to normalized text void"
+FOREIGN_LANGUAGE_TEXT = "Item dropped: The text is in other language"

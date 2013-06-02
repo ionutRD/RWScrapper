@@ -1,10 +1,18 @@
+"""
+Represent a downloaded content
+"""
 from scrapy.item import Item, Field
+
+
 
 class RWScrapperItem(Item):
     """
     Page raw text
     """
-    text = Field()
+    raw_text = Field()
+    normalized_text = Field()
     url = Field()
     canonical_url = Field()
-    pass
+    timestamp = Field()
+    total_pages = Field()
+    normalized_pages = Field()
