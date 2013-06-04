@@ -66,24 +66,21 @@ def normalize_text(raw_text):
 
         ntext = re.sub(ur'[\s\.!\?^]([^\w\s\d])+[\s\.!\?$]', UNICODE_CR, ntext)
 
-        # Delete spaces before and after newlines
-        ntext = re.sub(ur' ?\n ?', UNICODE_CR, ntext)
-
         # Delete multiple dots
         ntext = re.sub(ur'\.+', u'.', ntext)
 
         # Delete multiple spaces
         ntext = re.sub(ur' +', UNICODE_WSPACE, ntext)
 
+        # Delete spaces before and after newlines
+        ntext = re.sub(ur' ?\n ?', UNICODE_CR, ntext)
+
         # Strip multiple new lines
         ntext = re.sub(ur'\n+', UNICODE_CR, ntext)
 
         list_text = ntext.split(UNICODE_CR)
 
-        new_list_text = []
-        for line in list_text:
-            if accept_line(line):
-                new_list_text.append(line)
+        new_list_text = filter(accept_line, list_text)
 
         return UNICODE_CR.join(new_list_text)
 
