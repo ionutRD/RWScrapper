@@ -1,3 +1,4 @@
+import json
 import threading
 from scrapy.exceptions import DropItem
 
@@ -40,3 +41,22 @@ class RomanianTextPipeline(object):
     """
     def process_item(self, item, spider):
         raise DropItem(FOREIGN_LANGUAGE_TEXT)
+
+class JSONTestPipeline(object):
+    """
+    Write some item fields in JSON format. Used for testing purposes.
+    """
+    def __init__(self):
+        self.file = open('items.jl', 'wb')
+
+    def process_item(self, item, spider):
+        json_data = {}
+        json_data['url'] = item['url']
+        json_data['canonical_url'] = item['canonical_url']
+        json_data['timestamp'] = str(item['timestamp'])
+        json_data['total_pages'] = item['total_pages']
+        json_data['normalized_pages'] = item['normalized_pages']
+        line = json.dumps(json_data) + '\n'
+        self.file.write(line)
+        return item
+

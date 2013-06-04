@@ -24,10 +24,15 @@ class RWSpider(CrawlSpider):
     name = RWSPIDER_NAME
     start_urls = get_start_urls(START_SEED_FILE)
     allowed_domains = get_allowed_domains(ALLOWED_DOMAINS_FILE)
-    rules = (Rule(SgmlLinkExtractor(allow=('.*\.html', )), \
+    rules = (Rule(SgmlLinkExtractor(allow=('.*\.html', \
+                                           '.*\.htm', \
+                                           '.*\.shtml', \
+                                           '.*\.cgi', \
+                                           '.*\.pl', \
+                                           '.*\.asp', \
+                                           '.*\.aspx', \
+                                           '.*\.php', )), \
              callback='parse_html', follow= False), \
-             Rule(SgmlLinkExtractor(allow=('.*\.php', )), \
-             callback='parse_html', follow=False ), \
              Rule(SgmlLinkExtractor(allow=('.*\.pdf', )), \
              callback='parse_pdf', follow=False), \
              Rule(SgmlLinkExtractor(allow=('.*\.txt', )), \
@@ -40,7 +45,7 @@ class RWSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         items = []
         item = RWScrapperItem()
-        item['raw_text'] = hxs.select(HTML_TO_TEXT_XPATH).extract()
+        item['raw_text'] = ''.join(hxs.select(HTML_TO_TEXT_XPATH).extract())
         item['url'] = str(response.url)
         item['canonical_url'] = canonize_url(item['url'])
         item['timestamp'] = datetime.now()

@@ -1,4 +1,5 @@
 """Extract text from PDF file using PDFMiner with whitespace intact."""
+import sys
 
 from pdfminer.pdfparser import PDFDocument, PDFParser
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter, process_pdf
@@ -28,23 +29,6 @@ def pdf_to_string(path):
 
 if __name__ == "__main__":
     print "TEST 1"
-    txt = pdf_to_string("../test/pdftest/sample1.pdf")
+    txt = pdf_to_string(sys.argv[1])
     ntext = textutil.normalize_text(txt)
     print ntext
-
-    """
-    print "TEST 2"
-    print pdf_to_string("../test/pdftest/sample2.pdf")
-
-    print "TEST 3"
-    print pdf_to_string("../test/pdftest/sample3.pdf")
-
-    print "TEST 4"
-    print pdf_to_string("../test/pdftest/sample4.pdf")
-
-    print "TEST 5"
-    print pdf_to_string("../test/pdftest/sample5.pdf")
-
-    print "TEST 7"
-    print pdf_to_string("../test/pdftest/sample7.pdf")
-    """

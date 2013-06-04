@@ -28,6 +28,19 @@ UNICODE_WSPACE = u' '
 UNICODE_CR = u'\n'
 UNICODE_VOID = u''
 
+INVERTED_QUESTION_MARK = u'\u00bf'
+DOUBLE_QUESTION_MARK = u'\u2047'
+INVERTED_EXCLAMATION_MARK = u'\u00a1'
+DOUBLE_EXCLAMATION_MARK = u'\u203c'
+
+SECTION_SIGN = u'\u00a7'
+PILCROW_SIGN = u'\u00b6'
+
+FIGURE_DASH = u'\u2012'
+EN_DASH = u'\u2013'
+EM_DASH = u'\u2014'
+HORIZ_BAR = u'\u2015'
+
 # Translation table
 TRANSTAB = {ord(u'\t') : UNICODE_WSPACE, \
             ord(u'\f') : UNICODE_WSPACE, \
@@ -36,23 +49,34 @@ TRANSTAB = {ord(u'\t') : UNICODE_WSPACE, \
             ord(CAPITAL_S_CEDILLA) : CAPITAL_S_COMMA, \
             ord(SMALL_T_CEDILLA) : SMALL_T_COMMA, \
             ord(CAPITAL_T_CEDILLA) : CAPITAL_T_COMMA, \
-            ord(QUOTATION_MARK1) : u'"', \
-            ord(QUOTATION_MARK2) : u'"', \
-            ord(QUOTATION_MARK3) : u'"', \
-            ord(QUOTATION_MARK4) : u'"', \
-            ord(QUOTATION_MARK5) : u'"', \
-            ord(QUOTATION_MARK6) : u'"', \
             ord(APOSTROPHE1) : u'\'', \
             ord(APOSTROPHE2) : u'\'', \
             ord(DOUBLE_EXCL) : u'!', \
+            ord(INVERTED_EXCLAMATION_MARK) : u'!', \
+            ord(DOUBLE_EXCLAMATION_MARK) : u'!', \
             ord(HORIZ_ELLIPSIS) : u'.', \
             ord(ONE_DOT) : u'.', \
             ord(TWO_DOT) : u'.', \
+            ord(INVERTED_QUESTION_MARK) : u'?', \
+            ord(DOUBLE_QUESTION_MARK) : u'?', \
+            ord(FIGURE_DASH) : u'-', \
+            ord(EN_DASH) : u'-', \
+            ord(EM_DASH) : u'-', \
+            ord(HORIZ_BAR) : u'-', \
             ord(DAGGER) : None, \
             ord(DOUBLE_DAGGER) : None, \
             ord(BULLET) : None, \
             ord(TRIANGULAR_BULLET) : None, \
             ord(HYPHEN_BULLET) : None, \
+            ord(SECTION_SIGN) : None, \
+            ord(PILCROW_SIGN) : None, \
+            ord(QUOTATION_MARK1) : None, \
+            ord(QUOTATION_MARK2) : None, \
+            ord(QUOTATION_MARK3) : None, \
+            ord(QUOTATION_MARK4) : None, \
+            ord(QUOTATION_MARK5) : None, \
+            ord(QUOTATION_MARK6) : None, \
+            ord(u'"') : None, \
             ord(u'\r') : None, \
             ord(u'\a') : None, \
             ord(u'\b') : None}

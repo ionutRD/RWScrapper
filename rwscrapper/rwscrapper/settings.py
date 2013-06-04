@@ -27,7 +27,7 @@ ALLOWED_DOMAINS_FILE = 'rwscrapper/config/allowed_domains.txt'
 # Spider pipelines
 ITEM_PIPELINES = [
     'rwscrapper.pipelines.NormalizeTextPipeline',
-    'rwscrapper.pipelines.RomanianTextPipeline',
+    'rwscrapper.pipelines.JSONTestPipeline',
 ]
 
 # Warning messages
