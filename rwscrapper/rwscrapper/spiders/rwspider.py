@@ -32,11 +32,11 @@ class RWSpider(CrawlSpider):
                                            '.*\.asp', \
                                            '.*\.aspx', \
                                            '.*\.php', )), \
-             callback='parse_html', follow= False), \
+             callback='parse_html', follow=True), \
              Rule(SgmlLinkExtractor(allow=('.*\.pdf', )), \
-             callback='parse_pdf', follow=False), \
+             callback='parse_pdf', follow=True), \
              Rule(SgmlLinkExtractor(allow=('.*\.txt', )), \
-             callback='parse_txt', follow=False))
+             callback='parse_txt', follow=True))
 
     def parse_html(self, response):
         """
