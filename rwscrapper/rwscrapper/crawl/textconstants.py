@@ -28,6 +28,9 @@ UNICODE_WSPACE = u' '
 UNICODE_CR = u'\n'
 UNICODE_VOID = u''
 
+A_HAT1 = u'\u01ce'
+A_HAT2 = u'\u0103'
+
 INVERTED_QUESTION_MARK = u'\u00bf'
 DOUBLE_QUESTION_MARK = u'\u2047'
 INVERTED_EXCLAMATION_MARK = u'\u00a1'
@@ -45,6 +48,7 @@ HORIZ_BAR = u'\u2015'
 TRANSTAB = {ord(u'\t') : UNICODE_WSPACE, \
             ord(u'\f') : UNICODE_WSPACE, \
             ord(u'\v') : UNICODE_CR, \
+            ord(A_HAT1) : A_HAT2, \
             ord(SMALL_S_CEDILLA) : SMALL_S_COMMA, \
             ord(CAPITAL_S_CEDILLA) : CAPITAL_S_COMMA, \
             ord(SMALL_T_CEDILLA) : SMALL_T_COMMA, \

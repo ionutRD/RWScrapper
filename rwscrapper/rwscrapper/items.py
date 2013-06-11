@@ -11,6 +11,8 @@ class RWScrapperItem(Item):
     """
     raw_text = Field()
     normalized_text = Field()
+    processed_text = Field()
+    diacritics_lack = Field()
     url = Field()
     canonical_url = Field()
     timestamp = Field()

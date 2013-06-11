@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 """Extract text from PDF file using PDFMiner with whitespace intact."""
+import codecs
 import sys
 
 from pdfminer.pdfparser import PDFDocument, PDFParser
@@ -9,6 +11,7 @@ from pdfminer.cmapdb import CMapDB
 from pdfminer.layout import LAParams
 from cStringIO import StringIO
 import textutil
+import romanian_filter
 
 def pdf_to_string(path):
     try:
@@ -27,8 +30,24 @@ def pdf_to_string(path):
     except Exception:
         return textutil.UNICODE_VOID
 
+def txt_to_string(path):
+    try:
+        fh = codecs.open(path, 'r', 'utf-8')
+        text = textutil.UNICODE_VOID
+        for line in fh:
+            text += line + u'\n'
+        return text
+        fh.close()
+    except Exception:
+        return textutil.UNICODE_VOID
+
 if __name__ == "__main__":
-    print "TEST 1"
-    txt = pdf_to_string(sys.argv[1])
+    if sys.argv[1].endswith('.pdf'):
+        txt = pdf_to_string(sys.argv[1])
+    else:
+        txt = txt_to_string(sys.argv[1])
     ntext = textutil.normalize_text(txt)
+    ntext = romanian_filter.prepare_text(ntext)
     print ntext
+    #ntext = u"A fost odată ca-n povești a fost ca niciodată din rude mari împărătești o prea frumoasă fată"
+    print romanian_filter.romanian_score(ntext)
