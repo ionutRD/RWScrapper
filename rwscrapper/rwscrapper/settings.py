@@ -32,4 +32,9 @@ ITEM_PIPELINES = [
 
 # Warning messages
 NORMALIZED_TEXT_VOID = "Item dropped due to normalized text void"
+PROCESSED_TEXT_VOID = "Item dropped due to processed text void"
 FOREIGN_LANGUAGE_TEXT = "Item dropped: The text is in other language"
+TEXT_CANNOT_BE_SPLITTED = "Item dropped: The text cannot be splitted"
+
+# Scores
+ROMANIAN_THRESHOLD = 1.78

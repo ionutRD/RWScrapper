@@ -47,7 +47,7 @@ if __name__ == "__main__":
     else:
         txt = txt_to_string(sys.argv[1])
     ntext = textutil.normalize_text(txt)
-    ntext = romanian_filter.prepare_text(ntext)
+    #ntext = romanian_filter.prepare_text(ntext)
     print ntext
     #ntext = u"A fost odată ca-n povești a fost ca niciodată din rude mari împărătești o prea frumoasă fată"
-    print romanian_filter.romanian_score(ntext)
+    #print romanian_filter.romanian_score(ntext)

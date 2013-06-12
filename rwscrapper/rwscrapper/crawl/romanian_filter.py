@@ -345,11 +345,10 @@ def romanian_score(text):
         freq_err = relative_ngram_error(RO_FREQ_DICT_NO_DIA, freq_words)
         bonus = -BONUS
 
-    print tri_err, bi_err, uni_err, freq_err, avg_err
     total_error = (COEFF_TRI * tri_err + COEFF_BI * bi_err + COEFF_UNI * uni_err + COEFF_FREQ * freq_err + COEFF_AVG * avg_wlen) / \
                   (COEFF_TRI + COEFF_BI + COEFF_UNI + COEFF_FREQ + COEFF_AVG) - bonus
 
-    return total_error
+    return (is_no_dia, tri_err, bi_err, uni_err, freq_err, avg_err, total_error)
 
 if __name__ == "__main__":
         """
