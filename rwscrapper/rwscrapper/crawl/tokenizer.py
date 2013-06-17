@@ -44,6 +44,8 @@ ABBREVIATIONS = [
     u'astrol', \
     u'bibl', \
     u'biol', \
+    u'bl', \
+    u'ap', \
     u'cf', \
     u'constr', \
     u'chir', \
@@ -80,6 +82,7 @@ ABBREVIATIONS = [
     u'mar', \
     u'numism', \
     u'ornit', \
+    u'pag', \
     u'psih', \
     u'peior', \
     u'paleogr', \
@@ -92,6 +95,7 @@ ABBREVIATIONS = [
     u'perf', \
     u'poligr', \
     u'prez', \
+    u'spl', \
     u'reg', \
     u'rel', \
     u'sg', \
@@ -117,9 +121,15 @@ ABBREVIATIONS = [
     u'urm', \
     u'ed', \
     u'vol', \
+    u'str', \
+    u'tel', \
+    u'fax', \
+    u'adr', \
+    u'alin', \
 ]
 
 UNCOMMON_ENDS = [
+    u'u', \
     u'în', \
     u'in', \
     u'despre', \
@@ -161,6 +171,7 @@ UNCOMMON_ENDS = [
     u'de', \
     u'unui', \
     u'unei', \
+    u'unor', \
     u'niște', \
     u'niste', \
     u'acest', \
@@ -190,6 +201,73 @@ PUNCTUATION = [
     u';', \
 ]
 
+SEP = [
+    u'.', \
+    u'!', \
+    u'?', \
+    u';', \
+]
+
+STRIPS = [
+    u'.', \
+    u',', \
+    u':', \
+    u';', \
+    u'-', \
+    u'?', \
+    u'!', \
+    u' ', \
+    u'\n', \
+]
+
+NUM_WORDS_PER_PHRASE = 2
+
+def find_first_of(text, sep, search_idx):
+    """
+    Find the first appearance of a separator
+    from 'sep' after search_idx
+    """
+    if search_idx < 0 or search_idx >= len(text):
+        return -1
+    idx = search_idx
+    for ch in text[search_idx:]:
+        if ch in sep:
+            return idx
+        idx +=1
+    return -1
+
+def generalized_strip(text, punctuation):
+    """
+    Strip a text by a set of punctuation characters
+    """
+    if not punctuation:
+        return text
+
+    start_idx = 0
+    for ch in text:
+        if ch not in punctuation:
+            break
+        start_idx += 1
+
+    end_idx = len(text)
+    for idx in range(len(text) - 1, -1, -1):
+        if text[idx] not in punctuation:
+            end_idx = idx + 1
+            break
+
+    return text[start_idx:end_idx]
+
+def process_text(text):
+    """
+    Normalize each phrase
+    """
+    processed_text = re.sub(ur'\n[\(\)\[\]\{\}]', UNICODE_WSPACE, text)
+    processed_text = re.sub(ur'^[a-z0-9]\)\s', UNICODE_WSPACE, processed_text)
+    processed_text = re.sub(ur'\s+', UNICODE_WSPACE, processed_text)
+
+    return processed_text
+
+
 
 def sentence_tokenizer(text):
     """
@@ -203,9 +281,8 @@ def sentence_tokenizer(text):
     # Phase 1: End of line tokenizing
     while True:
         idx = text.find(u'\n', search_idx)
-        print idx, search_idx
         if idx == -1:
-            tokens.append(text[last_idx:])
+            tokens.append(process_text(text[last_idx:]))
             break
         slice_txt = text[:idx].lower().strip()
         not_end = False
@@ -225,13 +302,44 @@ def sentence_tokenizer(text):
                     not_end = True
                     break
         if not not_end:
-            tokens.append(text[last_idx:idx])
+            tokens.append(process_text(text[last_idx:idx]))
             last_idx = idx
         search_idx = idx + 1
-    return tokens
+
+    sentence_tokens = []
+    # Phase 2: Punctuation tokenizing
+    for token in tokens:
+        search_idx = 0
+        last_idx = 0
+        while True:
+            idx = find_first_of(token, SEP, search_idx)
+            if idx == -1:
+                sentence_tokens.append(process_text(token[last_idx:]))
+                break
+            slice_txt = token[:idx].lower().strip()
+            not_end = False
+            for abbr in ABBREVIATIONS:
+                if slice_txt.endswith(u'{0}.'.format(abbr)) or \
+                   slice_txt.endswith(abbr):
+                    not_end = True
+                    break
+            if not not_end:
+                sentence_tokens.append(process_text(token[last_idx:idx]))
+                last_idx = idx
+            search_idx = idx + 1
+
+    # Phase 3: Phrase filtering
+    sentence_tokens = filter(lambda x : x != UNICODE_VOID, sentence_tokens)
+    sentence_tokens = filter(lambda x : len(x.split()) > NUM_WORDS_PER_PHRASE, sentence_tokens)
+
+    for idx in range(len(sentence_tokens)):
+        sentence_tokens[idx] = generalized_strip(sentence_tokens[idx], STRIPS)
+
+
+    return sentence_tokens
 
 if __name__ == "__main__":
-    TEXT = u'ana are mere , \n roșii și \n Verzi'
+    TEXT = u'Ana are mere. Merele sunt roșii'
     tokens = sentence_tokenizer(TEXT)
     print len(tokens)
     for sentence in tokens:

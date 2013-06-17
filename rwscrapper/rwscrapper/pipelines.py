@@ -5,6 +5,8 @@ from scrapy.exceptions import DropItem
 from rwscrapper.settings import *
 from rwscrapper.crawl.textutil import *
 from rwscrapper.romanian_filter import *
+from rwscrapper.tokenizer import *
+from rwscrapper.sentence_processor import *
 
 normalized_lock = threading.Lock()
 
@@ -67,8 +69,20 @@ class PhraseSplitterPipeline(object):
     Splits the text into phrases
     """
     def process_item(self, item, spider):
-        item['phrases'] = []
-        raise DropItem()
+        item['phrases'] = sentence_tokenizer(item['normalized_text'])
+        if not item
+            raise DropItem(TEXT_CANNOT_BE_SPLITTED)
+
+        return item
+
+class SentenceLevelProcessingPipeline(object):
+    """
+    Phase #1: Normalize every phrase
+    Phase #2: Filter only Romanian phrases
+    """
+    for idx in range(len(item['phrases'])):
+        item['phrases'][idx] = sentence_normalization(item['phrases'][idx])
+    return item
 
 class JSONTestPipeline(object):
     """

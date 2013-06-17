@@ -1,0 +1,33 @@
+Les mémos que Licklider du Massachusetts Institute of Technology (MIT) écrivit en juillet 1962 sont les plus anciens textes décrivant les interactions sociales qui seraient possibles avec un réseau d'ordinateurs. Cela devait notamment faciliter les communications entre chercheurs de la Defense Advanced Research Projects Agency (DARPA). En octobre 1962, Licklider fut le premier chef du programme de recherche en informatique de la DARPA. Il persuada ses successeurs Ivan Sutherland, Bob Taylor et le chercheur du MIT Lawrence G. Roberts de l'intérêt des réseaux informatiques.
+
+En 1961, Leonard Kleinrock du MIT publia le premier texte théorique sur les télécommunications par paquets et en 1964 il publia le premier livre sur le sujet.
+
+En 1965, Roberts testa avec Thomas Merrill la première connexion informatique à longue distance, entre le Massachusetts et la Californie. Le résultat montra que des ordinateurs pouvaient travailler ensemble à distance, mais que le mode de télécommunication par établissement de circuit du système téléphonique était inadapté. Le concept de communication par paquets de Kleinrock s'imposa.
+
+En 1966, Roberts fut engagé par Taylor à la DARPA pour concevoir l'ARPANET. Il publia les plans en 1967. En présentant ce texte, il découvrit deux autres groupes de chercheurs travaillant indépendamment sur le même sujet : un groupe du National Physical Laboratory (NPL) du Royaume-Uni avec Donald Davies et Roger Scantlebury, et un groupe de la RAND Corporation avec Paul Baran.
+
+Entre 1962 et 1965, le groupe de la RAND avait étudié la transmission par paquets pour l'armée américaine. Le but était de pouvoir maintenir les télécommunications en cas d'attaque (éventuellement nucléaire), ce que permet une transmission par paquets dans un réseau non centralisé. Il s'agissait d'un développement indépendant d'ARPANET : bien que probablement robuste face à une telle attaque, ARPANET n'a pourtant été conçu que pour faciliter les télécommunications entre chercheurs. Le rapport de Paul Baran est resté purement théorique, et est rapidement tombé dans l'oubli. Mais le mythe d'« ARPANET comme dernier rempart à une attaque atomique » trouve là son origine.
+
+Pendant ce temps, au British National Physical Laboratory, l'équipe de Donald Davies avait progressé : NPL Network, le premier réseau maillé fondé sur la transmission de datagrammes (packets) était fonctionnel. Mais l'histoire d'Internet n'a pas été écrite par les Européens : ARPANET sera désormais l'origine officielle d'Internet.
+
+En août 1968, la DARPA accepta de financer le développement du matériel de routage des paquets d'ARPANET. Ce développement fut confié en décembre à un groupe de la firme Bolt, Beranek and Newman (BBN) de Boston. Ce dernier travailla avec Bob Kahn sur l'architecture du réseau. Roberts améliorait les aspects topologiques et économiques du réseau. Kleinrock préparait des systèmes de mesures du réseau.
+
+Le 20 septembre 1969, BBN installa le premier équipement à l'UCLA où travaillait Kleinrock. Le second nœud du réseau fut installé au Stanford Research Institute (SRI) où travaillait Douglas Engelbart sur un projet d'hypertexte. Deux nœuds supplémentaires furent ajoutés avec l'université de Santa Barbara et l'université d'Utah. Fin 1969, ARPANET comptait donc quatre nœuds.
+
+Le Network Working Group (NWG) conduit par Steve Crocker finit le protocole de communication poste-à-poste NCP en décembre 1970. Ce protocole fut adopté entre 1971 et 1972 par les sites branchés à ARPANET. Ceci permit le développement d'applications par les utilisateurs du réseau.
+
+En 1972, Ray Tomlinson mit au point la première application importante : le courrier électronique. En octobre 1972, Kahn organisa la première démonstration à grande échelle d'ARPANET à l'International Computer Communication Conference (ICCC). C'était la première démonstration publique.
+
+Le concept d'Internet est né d'ARPANET. L'idée était de permettre la connexion entre des réseaux divers : ARPANET, des communications avec les satellites, des communications par radio. Cette idée fut introduite par Kahn en 1972 sous le nom de Internetting. Le protocole NCP d'ARPANET ne permettait pas d'adresser des hôtes hors d'ARPANET ni de corriger d'éventuelles erreurs de transmission. Kahn décida donc de développer un nouveau protocole, qui devint finalement TCP/IP.
+
+En parallèle, un projet inspiré par ARPANET était dirigé en France par Louis Pouzin : le projet Cyclades. De nombreuses propriétés de TCP/IP ont ainsi été développées, plus tôt, pour Cyclades. Pouzin et Kahn indiquent que TCP/IP a été inspiré par Cyclades. |
+
+En 1973, Kahn demanda à Vint Cerf (parfois appelé le père d'Internet) de travailler avec lui, car Cerf connaissait les détails de mise en œuvre de NCP. Le premier document faisant référence à TCP est écrit en 1973 par Cerf : A Partial Specification of an International Transmission Protocol. La première spécification formelle de TCP date de décembre 1974, c'est le RFC 675.
+
+La version initiale de TCP ne permettait que la communication en établissant un circuit virtuel. Cela fonctionnait bien pour le transfert de fichiers ou le travail à distance, mais n'était pas adapté à des applications comme la téléphonie par Internet. TCP fut donc séparé de IP et UDP proposé pour les transmissions sans établissement d'un circuit.
+
+À la fin des années 1980, la NSF (National Science Foundation) qui dépend de l'administration américaine, met en place cinq centres informatiques surpuissants, auxquels les utilisateurs pouvaient se connecter, quel que soit le lieu où ils se trouvaient aux États-Unis : ARPANET devenait ainsi accessible sur une plus grande échelle. Le système rencontra un franc succès et, après la mise à niveau importante (matériels et lignes) à la fin des années 1980, s'ouvrit au trafic commercial au début des années 1990.
+
+Le début des années 1990 marque, en fait, la naissance de l'aspect le plus connu d'Internet aujourd'hui : le web, un ensemble de pages en HTML mélangeant du texte, des liens, des images, adressables via une URL et accessibles via le protocole HTTP. Ces standards, développés au CERN par Tim Berners-Lee et Robert Cailliau devinrent rapidement populaires grâce au développement au NCSA par Marc Andreessen et Éric Bina du premier navigateur multimédia Mosaic.
+
+En janvier 1992, l’Internet Society (ISOC) voit le jour avec pour objectif de promouvoir et de coordonner les développements sur Internet. L’année 1993 voit l’apparition du premier navigateur web ou butineur (browser), supportant le texte et les images. Cette même année, la National Science Foundation (NSF) mandate une compagnie pour enregistrer les noms de domaine.

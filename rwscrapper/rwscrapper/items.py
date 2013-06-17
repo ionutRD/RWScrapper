@@ -57,4 +57,3 @@ class RWScrapperItem(Item):
 
     # Text phrases
     phrases = Field()
-

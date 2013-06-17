@@ -12,6 +12,7 @@ from pdfminer.layout import LAParams
 from cStringIO import StringIO
 import textutil
 import romanian_filter
+import tokenizer
 
 def pdf_to_string(path):
     try:
@@ -47,7 +48,13 @@ if __name__ == "__main__":
     else:
         txt = txt_to_string(sys.argv[1])
     ntext = textutil.normalize_text(txt)
+    phrases = tokenizer.sentence_tokenizer(ntext)
+
+    for phrase in phrases:
+        print phrase
+        print '---------------------------------------'
+
     #ntext = romanian_filter.prepare_text(ntext)
-    print ntext
+    #print ntext
     #ntext = u"A fost odată ca-n povești a fost ca niciodată din rude mari împărătești o prea frumoasă fată"
     #print romanian_filter.romanian_score(ntext)
