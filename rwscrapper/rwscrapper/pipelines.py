@@ -82,7 +82,21 @@ class SentenceLevelProcessingPipeline(object):
     """
     for idx in range(len(item['phrases'])):
         item['phrases'][idx] = sentence_normalization(item['phrases'][idx])
+    if item['rou_score'] < ROMANIAN_THRESHOLD_NO_PHRASE_CHECK:
+        item['phrases'] = filter(romanian_language_filter, item['phrases'])
+
+    if not item:
+        raise DropItem(NO_ROMANIAN_PHRASE)
+
     return item
+
+class WordLevelProcessingPipeline(object):
+    """
+    Phase #1: Tokenize each phrase
+    Phase #2: Error checking
+    Phase #3: Database lookup
+    Phase #4: Generate suggestions
+    """
 
 class JSONTestPipeline(object):
     """

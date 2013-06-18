@@ -6,13 +6,14 @@ import re
 from romanian_filter import *
 
 LOWER_PERCENT = 0.5
-K1 = 5
-K2 = 2.5
-K3 = -20
-K4 = 10
-K5 = 15
-K6 = 10
-K7 = 10
+ROMANIAN_SCORE = 0.5
+K1 = 8
+K2 = 1
+K3 = 100
+K4 = -55
+K5 = 18.5
+K6 = -77
+K7 = -10
 
 def lowercase_filter(text):
     """
@@ -24,6 +25,19 @@ def lowercase_filter(text):
     if n1 / n2 > LOWER_PERCENT:
         return True
     return False
+
+def ngram_score(d1, d2, bonus = 0):
+    """
+    Calculate the ngram score between two dictionaries
+    """
+    score = 0
+    for ngram in d1:
+        if ngram in d2:
+            score += d2[ngram]
+        else:
+            score += bonus
+
+    return score
 
 def romanian_language_filter(text):
     """
@@ -56,20 +70,19 @@ def romanian_language_filter(text):
     freq_words = freq_words_from_text(rtext)
 
     if  diacritics_score == 0:
-        bi_err = relative_ngram_error(bi_dict, BIGRAM_DICT_NO_DIA)
-        tri_err = relative_ngram_error(tri_dict, TRIGRAM_DICT_NO_DIA)
-        freq_err = relative_ngram_error(RO_FREQ_DICT, freq_words)
+        bi_err = ngram_score(bi_dict, BIGRAM_DICT_NO_DIA, 0)
+        tri_err = ngram_score(tri_dict, TRIGRAM_DICT_NO_DIA, 0)
+        freq_err = ngram_score(freq_words, RO_FREQ_DICT, 0)
     else:
-        bi_err = relative_ngram_error(bi_dict, BIGRAM_DICT)
-        tri_err = relative_ngram_error(tri_dict, TRIGRAM_DICT)
-        freq_err = relative_ngram_error(RO_FREQ_DICT_NO_DIA, freq_words)
+        bi_err = ngram_score(bi_dict, BIGRAM_DICT)
+        tri_err = ngram_score(tri_dict, TRIGRAM_DICT)
+        freq_err = ngram_score(freq_words, RO_FREQ_DICT_NO_DIA)
 
     print 'freq_err: ', freq_err, 'bi_err: ', bi_err, 'tri_err: ', tri_err, 'dia_score: ', diacritics_score, 'rare_score: ', rare_char_score, 'dc: ', double_consonant, 'quote_freq', quote_freq
 
-    score = (tri_err * K1 + bi_err * K2 + diacritics_score * K3 + rare_char_score * K4 + freq_err * K5 + double_consonant * K6 + quote_freq * K7) / \
-            (K1 + K2 + K3 + K4 + K5 + K6 + K7)
+    score = (tri_err * K1 + diacritics_score * K3 + rare_char_score * K4 + freq_err * K5 + double_consonant * K6 + quote_freq * K7)
     print 'score: ', score
-    return score
+    return score > ROMANIAN_SCORE
 
 def sentence_normalization(text):
     """
@@ -140,10 +153,56 @@ if __name__ == '__main__':
     ntxt = sentence_normalization(txt)
     romanian_language_filter(ntxt)
 
+    print "RO12: "
+    txt = u'Presaram marar proaspat, tocat.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "RO13: "
+    txt = u'Turnam laptele intr-o farfuriuta adanca si inmuiem feliile de paine, apoi le inmuiem in ou si le prajim in uleiul incins, timp de - minute, pe ambele parti.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "RO14: "
+    txt = u'Amestecam faina, zaharul, sucul de rosii, sarea si nucsoara, adaugam peste mazare si continuam fierbearea inca 10 minute.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "RO15: "
+    txt = u'Anastasia -  Pe 22 decembrie este pomenita Sf. Mare Mucenita Anastasia, martirizata pentru Hristos la 25 decembrie 304.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "RO16: "
+    txt = u'Termenul "Liturghie"este de origine greaca. La inceput, cuvantul "Liturghie" desemna orice actiune sau lucrare in interes public sau comun. In Antichitatea greaca, termenul.Liturghie. avea o intrebuintare nereligioasa.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "RO17: "
+    txt = u'Sarbatoarea numita Izvorul Tamaduirii s-a generalizat in Biserica Ortodoxa inca din secolul al V-lea. In toate bisericile si manastirile ortodoxe, dupa savarsirea Sfintei Liturghii, se savarseste slujba de sfintire a apei, dupa o randuiala adecvata Saptamanii Luminate.'
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
     print "IT1: "
     txt = u"Il livello medio marino era di circa 120 metri inferiore a quello attuale, e la zona dove sorge attualmente la Manica era una distesa di tundra attraversata da un fiume che drenava le acque del Reno e del Tamigi nell'oceano Atlantico"
     ntxt = sentence_normalization(txt)
     romanian_language_filter(ntxt)
+
+    print "IT2: "
+    txt = u"Dal 1994, inoltre, è attivo l'eurotunnel, un tunnel stradale e ferroviario che collega le due sponde."
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "IT3: "
+    txt = u"La situazione cambiò drasticamente quando a capo degli Unni salì Attila nel 445"
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
+    print "IT4: "
+    txt = u"Il nuovo imperatore, reclutati forti contingenti di mercenari barbari, riuscì, con la forza del suo esercito, ad ottenere il riconoscimento di Visigoti, Burgundi e proprietari terrieri gallici, recuperando per l'Impero la Gallia e la Hispania."
+    ntxt = sentence_normalization(txt)
+    romanian_language_filter(ntxt)
+
 
     print "EN1: "
     txt = u'Example: The sound of her voice was sweet'

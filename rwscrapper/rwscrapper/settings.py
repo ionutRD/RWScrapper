@@ -38,6 +38,8 @@ NORMALIZED_TEXT_VOID = "Item dropped due to normalized text void"
 PROCESSED_TEXT_VOID = "Item dropped due to processed text void"
 FOREIGN_LANGUAGE_TEXT = "Item dropped: The text is in other language"
 TEXT_CANNOT_BE_SPLITTED = "Item dropped: The text cannot be splitted"
+NO_ROMANIAN_PHRASE = "Item dropped: No romanian phrase found"
 
 # Scores
 ROMANIAN_THRESHOLD = 1.78
+ROMANIAN_THRESHOLD_NO_PHRASE_CHECK = 1.72
