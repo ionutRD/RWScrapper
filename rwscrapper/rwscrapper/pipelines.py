@@ -7,6 +7,7 @@ from rwscrapper.crawl.textutil import *
 from rwscrapper.romanian_filter import *
 from rwscrapper.tokenizer import *
 from rwscrapper.sentence_processor import *
+from rwscrapper.word_processor import *
 
 normalized_lock = threading.Lock()
 
@@ -85,7 +86,7 @@ class SentenceLevelProcessingPipeline(object):
     if item['rou_score'] < ROMANIAN_THRESHOLD_NO_PHRASE_CHECK:
         item['phrases'] = filter(romanian_language_filter, item['phrases'])
 
-    if not item:
+    if not item['phrases']:
         raise DropItem(NO_ROMANIAN_PHRASE)
 
     return item
@@ -97,6 +98,16 @@ class WordLevelProcessingPipeline(object):
     Phase #3: Database lookup
     Phase #4: Generate suggestions
     """
+    item['words'] = []
+    for phrase in item['phrases']:
+        words += word_tokenizer(phrase)
+        if len(words) > 0:
+            item['words'] += words
+
+    if not item['words']:
+        raise DropItem(NO_ROMANIAN_WORDS)
+
+    return item
 
 class JSONTestPipeline(object):
     """

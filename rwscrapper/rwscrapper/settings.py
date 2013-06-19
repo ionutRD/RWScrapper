@@ -29,7 +29,8 @@ ITEM_PIPELINES = [
     'rwscrapper.pipelines.NormalizeTextPipeline', \
     'rwscrapper.pipelines.RomanianTextPipeline', \
     'rwscrapper.pipelines.PhraseSplitterPipeline', \
-    'rwscrapper.pipelines.SentenceLevelProcessingPipeline' \
+    'rwscrapper.pipelines.SentenceLevelProcessingPipeline', \
+    'rwscrapper.pipelines.WordLevelProcessingPipeline', \
     'rwscrapper.pipelines.JSONTestPipeline', \
 ]
 

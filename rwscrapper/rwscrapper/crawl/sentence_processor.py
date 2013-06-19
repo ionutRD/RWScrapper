@@ -6,13 +6,13 @@ import re
 from romanian_filter import *
 
 LOWER_PERCENT = 0.5
-ROMANIAN_SCORE = 0.5
-K1 = 8
-K2 = 1
-K3 = 100
-K4 = -55
-K5 = 18.5
-K6 = -77
+ROMANIAN_SCORE = 13.8
+K1 = 14
+K2 = 4.5
+K3 = 65
+K4 = -65
+K5 = 20
+K6 = -45.5
 K7 = -10
 
 def lowercase_filter(text):
@@ -33,7 +33,7 @@ def ngram_score(d1, d2, bonus = 0):
     score = 0
     for ngram in d1:
         if ngram in d2:
-            score += d2[ngram]
+            score += d1[ngram]
         else:
             score += bonus
 
