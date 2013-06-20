@@ -1,7 +1,51 @@
 drop database if exists rwscrapper;
-create database rwscrapper character set utf8 collate utf8_general_ci;;
+create database rwscrapper character set utf8 collate utf8_general_ci;
 
-drop user 'scrapper'@'localhost';
+use mysql;
+
+delimiter $$
+
+drop procedure if exists `DropUserIfExists`$$
+
+create definer=`root`@`localhost` procedure `DropUserIfExists`(
+    MyUserName VARCHAR(100), 
+    MyHostName VARCHAR(100)
+)
+begin
+    declare pDone int default 0;
+    declare mUser varchar(100);
+    declare  mHost varchar(100);
+    declare recUserCursor CURSOR FOR
+    select `User`, `Host` from `mysql`.`user` where `User` = MyUserName;
+    declare continue handler for not found set pDone = 1;
+
+    if (MyHostName is not null) then
+        -- 'username'@'hostname' exists
+        if (exists(select null FROM `mysql`.`user` where `User` = MyUserName AND `Host` = MyHostName)) then
+            set @SQL = (select mResult from (select group_concat("drop user ", "'", MyUserName, "'@'", MyHostName, "'") as mResult) as Q LIMIT 1);
+            prepare stmt from @SQL;
+            execute stmt;
+            deallocate prepare stmt;
+        end if;
+    else
+        -- check whether MyUserName exists (MyUserName@'%' , MyUserName@'localhost' etc)
+        open recUserCursor;
+        repeat
+        fetch recUserCursor into mUser, mHost;
+        if not pDone then
+            set @SQL = (select mResult from (select group_concat("drop user ", "'", mUser, "'@'", mHost, "'") as mResult) as Q LIMIT 1);
+            prepare stmt from @SQL;
+            execute stmt;
+            deallocate prepare stmt;
+        end if;
+        until pDone end repeat;
+    end if;
+    flush privileges;
+    end$$
+
+delimiter ;
+
+call `DropUserIfExists`('scrapper', 'localhost');
 create user 'scrapper'@'localhost' identified by 'scrapper';
 
 use rwscrapper;
@@ -12,7 +56,7 @@ grant super on *.* to 'scrapper'@'localhost';
 
 drop table if exists `Texts`;
 create table `Texts` (
-    `textId` int not null auto_increment,
+    `id` int not null auto_increment,
     `url` char(200) not null,
     `canonicalUrl` char(200) not null,
     `contentFile` text character set utf8 not null,
@@ -105,7 +149,7 @@ create table `Inflections` (
     index(`id`)
 );
 
-drop table if exists `InflectedForms`
+drop table if exists `InflectedForms`;
 create table `InflectedForms` (
     `id` int(11) not null auto_increment,
     `wordId` int(11) not null,
@@ -296,7 +340,6 @@ insert into `Prefixes` (`id`,`form`, `formUtf8General`, `prefixLength`) values
 (57, 'homi', 'homi', 4),
 (58, 'hecto', 'hecto', 5),
 (59, 'hepato', 'hepato', 6),
-(59, 'infra', 'infra', 5),
 (60, 'ultra', 'ultra', 5),
 (61, 'între', 'între', 5),
 (62, 'inter', 'inter', 5),
@@ -417,7 +460,8 @@ insert into `Prefixes` (`id`,`form`, `formUtf8General`, `prefixLength`) values
 (183, 'neutro', 'neutro', 6),
 (184, 'ftizio', 'ftizio', 6),
 (185, 'acvi', 'acvi', 4),
-(186, 'histo', 'histo', 5);
+(186, 'histo', 'histo', 5),
+(187, 'infra', 'infra', 5);
 unlock tables;
 
 lock tables `Suffixes` write;
@@ -456,13 +500,9 @@ insert into `Suffixes` (`id`,`form`, `formUtf8General`, `suffixLength`) values
 (32, 'et', 'et', 2),
 (33, 'it', 'it', 2),
 (34, 'ut', 'ut', 2),
-(33, 'atru', 'atru', 4),
-(34, 'acru', 'acru', 4),
-(35, 'ație', 'ație', 4),
 (35, 'autică', 'autică', 6),
 (36, 'eutică', 'eutică', 6),
 (37, 'ază', 'ază', 3),
-
 (38, 'eză', 'eză', 3),
 (39, 'iză', 'iză', 3),
 (40, 'bilitate', 'bilitate', 8),
@@ -559,7 +599,10 @@ insert into `Suffixes` (`id`,`form`, `formUtf8General`, `suffixLength`) values
 (131, 'nomie', 'nomie', 5),
 (132, 'grafie', 'grafie', 6),
 (133, 'term', 'term', 4),
-(134, 'norm', 'norm', 4);
+(134, 'norm', 'norm', 4),
+(135, 'atru', 'atru', 4),
+(136, 'acru', 'acru', 4),
+(137, 'ație', 'ație', 4);
 unlock tables;
 
 lock tables `Domains` write;
@@ -617,5 +660,5 @@ insert into `Domains` (`id`,`name`) values
 (52, 'cinematografie'),
 (53, 'neonatologie'),
 (54, 'economie'),
-(55, 'logică'),
+(55, 'logică');
 unlock tables;
