@@ -7,57 +7,118 @@ create user 'scrapper'@'localhost' identified by 'scrapper';
 use rwscrapper;
 
 grant all on rwscrapper.* to 'scrapper'@'localhost';
+grant all on DEX.* to 'scrapper'@'localhost';
+grant super on *.* to 'scrapper'@'localhost';
 
-drop table if exists Texts;
-create table Texts (
-    TextId int not null auto_increment,
-    Url varchar(200) not null,
-    CanonicalUrl varchar(200) not null,
-    ContentFile varchar(100) not null,
-    TrigramError float(4,2) not null,
-    BigramError float(4,2) not null,
-    UnigramError float(4, 2) not null,
-    FreqError float(4, 2) not null,
-    AverageWordLength float(5, 2) not null,
-    RomanianScore float(4, 2) not null,
-    Time timestamp null default current_timestamp,
-    primary key(TextId),
-    index(TextId)
+drop table if exists `Texts`;
+create table `Texts` (
+    `textId` int not null auto_increment,
+    `url` char(200) not null,
+    `canonicalUrl` char(200) not null,
+    `contentFile` text character set utf8 not null,
+    `trigramError` float(4,2) not null,
+    `bigramError` float(4,2) not null,
+    `unigramError` float(4, 2) not null,
+    `freqError` float(4, 2) not null,
+    `averageWordLength` float(5, 2) not null,
+    `romanianScore` float(4, 2) not null,
+    `sourceType` int(11) not null,
+    `createDate` int(11) not null,
+    primary key(`id`),
+    index(`id`)
 );
 
-drop table if exists Phrases;
-create table Phrases (
-    PhraseId int not null auto_increment,
-    TextId int not null,
-    PhraseContent text not null,
-    RomanianScore float(10,2) not null,
-    primary key(PhraseId),
-    foreign key(TextId) references Texts(TextId),
-    index(PhraseId)
+drop table if exists `Phrases`;
+create table `Phrases` (
+    `id` int(11) not null auto_increment,
+    `textId` int not null,
+    `phraseContent` text character set utf8 not null,
+    `romanianScore` float(11,2) not null,
+    primary key(`id`),
+    foreign key(`textId`) references Texts(`id`),
+    index(`id`)
 );
 
-drop table if exists Words;
-create table Words (
-    WordId int not null auto_increment,
-    PhraseId int not null,
-    Word varchar(200) not null,
-    IsHyphenized boolean not null default false,
-    IsLoan boolean not null default false,
-    IsCommon boolean not null default false,
-    IsArchaic boolean not null default false,
-    IsRegional boolean not null default false,
-    IsNeologism boolean not null default false,
-    IsMisspelled boolean not null default false,
-    Appearances int not null default 0,
-    Domain varchar(50),
-    Etymology varchar(10),
-    Suffix varchar(20),
-    Prefix varchar(20),
-    PartOfSpeech varchar(50),
-    StandardForm varchar(200),
-    Definition text,
-    primary key(WordId),
-    foreign key(PhraseId) references Phrases(`PhraseId`),
-    index(WordId),
-    index(Word)
+drop table if exists `Prefixes`;
+create table `Prefixes` (
+    `id` int(11) not null auto_increment,
+    `form` char(20) collate utf8_romanian_ci not null,
+    `formUtf8General` char(20) character set utf8 not null,
+    `prefixLength` int(11) not null,
+    `meaning` text collate utf8_romanian_ci,
+    primary key(`id`),
+    index(`id`),
+    index(`form`)
 );
+
+drop table if exists `Suffixes`;
+create table `Suffixes` (
+    `id` int(11) not null auto_increment,
+    `form` char(20) collate utf8_romanian_ci not null,
+    `formUtf8General` char(20) character set utf8 not null,
+    `suffixLength` int(11) not null,
+    `meaning` text collate utf8_romanian_ci,
+    primary key(`id`),
+    index(`id`),
+    index(`form`)
+);
+
+drop table if exists `Domains`;
+create table `Domains` (
+    id int(11) not null auto_increment,
+    name char(100) collate utf8_romanian_ci not null,
+    primary key(`id`),
+    index(`id`),
+    index(`name`)
+);
+
+
+drop table if exists `Words`;
+create table `Words` (
+    `id` int(11) not null auto_increment,
+    `phraseId` int(11) not null,
+    `form` char(100) collate utf8_romanian_ci not null,
+    `formUtf8General` char(100) character set utf8 not null,
+    `reverse` char(100) collate utf8_romanian_ci not null,
+    `charLength` int(11) not null,
+    `createDate` int(11) not null,
+    `etymology` varchar(50),
+    `suffixId` int(11),
+    `prefixId` int(11),
+    `domainId` int(11),
+    `definition` text collate utf8_romanian_ci,
+    primary key(`id`),
+    foreign key(`phraseId`) references Phrases(`id`),
+    foreign key(`prefixId`) references Prefixes(`id`),
+    foreign key(`suffixId`) references Suffixes(`id`),
+    foreign key(`domainId`) references Domains(`id`),
+    index(`id`),
+    index(`form`)
+);
+
+drop table if exists `Inflections`;
+create table `Inflections` (
+    `id` int(11) not null auto_increment,
+    `description` varchar(255) collate utf8_romanian_ci,
+    `shortForm` varchar(10),
+    primary key(`id`),
+    index(`id`)
+);
+
+drop table if exists `InflectedForms`
+create table `InflectedForms` (
+    `id` int(11) not null auto_increment,
+    `wordId` int(11) not null,
+    `inflectionId` int(11) not null,
+    `form` char(100) collate utf8_romanian_ci not null,
+    `formUtf8General` char(100) character set utf8 not null,
+    `noApp` int(11) default 1,
+    primary key(`id`),
+    foreign key(`wordId`) references Words(`id`),
+    foreign key(`inflectionId`) references Inflections(`id`),
+    index(`id`),
+    index(`form`)
+);
+
+lock tables `Inflections` write;
+insert into `Inflections` values
