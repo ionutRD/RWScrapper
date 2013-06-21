@@ -1,5 +1,7 @@
 import json
 import threading
+
+from sqlalchemy import *
 from scrapy.exceptions import DropItem
 
 from rwscrapper.settings import *
@@ -8,6 +10,7 @@ from rwscrapper.romanian_filter import *
 from rwscrapper.tokenizer import *
 from rwscrapper.sentence_processor import *
 from rwscrapper.word_processor import *
+from rwscrapper.word_cache import *
 
 normalized_lock = threading.Lock()
 
@@ -95,19 +98,80 @@ class WordLevelProcessingPipeline(object):
     """
     Phase #1: Tokenize each phrase
     Phase #2: Error checking
-    Phase #3: Database lookup
     Phase #4: Generate suggestions
     """
     item['words'] = []
+    idx = 0
     for phrase in item['phrases']:
         words += word_tokenizer(phrase)
+        for word in words:
+            word.set_phrase(idx)
         if len(words) > 0:
             item['words'] += words
-
+        
     if not item['words']:
         raise DropItem(NO_ROMANIAN_WORDS)
 
     return item
+
+class DbCommunicatorPipeline(object):
+    def __init__(self):
+    """
+    Check if words exists in the database
+    Insert new words in db
+    """
+    self.cache = WordCache(CACHE_CAPACITY)
+    self.db_dex = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, DEX_DB))
+    self.db_rws = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, SCRAPPER_DB))
+    self.meta_dex = MetaData(self.db_dex)
+    self.meta_rws = MetaData(self.db_rws)
+
+    def has_diacritics(self, word):
+        """
+        Check if a word has diacritics
+        """
+        return all(map(lambda x : 65 <= ord(x) <= 90 or 97 <= ord(x) <= 122 or x == u'-', word))
+
+    def check_word(self, word, item):
+        """
+        Check if a word is in DEX or scrapper database
+        If the word is found in scrapper database 
+        Update the timestamp and the number of appearances
+        """
+        # Step 1: Search the word in cache
+        if not word.is_proper() and self.cache.find(word):
+            return True
+                
+        # Step 2: Search the word in DEX
+        if not word.is_proper():
+            infl_form = Table('InflectedForm', meta_dex, autoload = True)
+            stmt = select([infl_form.c.formNoAccent], infl_form.c.formNoAccent == word)
+            rs = stmt.execute()
+            sel_words = [x[0] for x in rs]
+            dret = self.has_diacritics(word)
+            if (not dret and len(sel_words) > 0) or (dret and word in sel_words):
+                self.cache.add(word)
+                return True
+
+        # Step 3: Search the word in scrapper database
+        infl_form = Table('InflectedForms', meta_rws, autoload = True)
+        stmt = select([infl_form.c.form], infl_form.c.form == word)
+        rs = stmt.execute()
+        sel_words = [x[0] for x in rs]
+        if word in sel_words:    
+            return True
+                
+        return False
+
+
+    def process_item(self, item, spider):
+        updated_phrases = []
+        updated_texts = []
+        for word in item['words']:
+            if not self.check_word(word, item):
+                self.
+        
+
 
 class JSONTestPipeline(object):
     """
@@ -126,4 +190,3 @@ class JSONTestPipeline(object):
         line = json.dumps(json_data) + '\n'
         self.file.write(line)
         return item
-

@@ -297,6 +297,8 @@ class Word:
         self._hyphen_word = False
         self._is_loan = False
         self._rou_chars = False
+        self._phrase_id = -1
+        self._reverse = word[::-1]
 
     def __str__(self):
         return repr(self._word)
@@ -316,6 +318,9 @@ class Word:
     def get_suffix(self):
         return self._suffix
 
+    def get_phrase(self):
+        return self._phrase_id
+
     def is_hyphenized(self):
         return self._hyphen_word
 
@@ -324,6 +329,9 @@ class Word:
 
     def is_proper(self):
         return self._is_proper
+
+    def set_phrase(self, id):
+        self._phrase_id = id
 
     def set_prefix(self, prefix):
         self._prefix = prefix
@@ -509,6 +517,14 @@ if __name__ == "__main__":
     print '--------------------------------------------------'
 
     txt = u'Deși mai multe țări din Uniunea Europeană au testat diferite proiecte de vot electronic, Estonia este în prezent (2011) singurul membru UE care folosește această procedură pe scară largă.'
+    words = word_tokenizer(txt)
+    for word in words:
+        print word
+
+
+    print '--------------------------------------------------'
+
+    txt = u'Societatea gălăţeană a reprezentat companiile europene la forumul anual al constructorilor şi echipamentelor navale * Rolls-Royce, Mitsubishi, Samsung s-au aflat printre greii alături de care s-a discutat despre viitorul industriei navale mondiale * Navele specializate, culoarul de producţie pentru constructorii gălăţeni'
     words = word_tokenizer(txt)
     for word in words:
         print word

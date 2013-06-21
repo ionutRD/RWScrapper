@@ -44,3 +44,13 @@ NO_ROMANIAN_PHRASE = "Item dropped: No romanian phrase found"
 # Scores
 ROMANIAN_THRESHOLD = 1.78
 ROMANIAN_THRESHOLD_NO_PHRASE_CHECK = 1.72
+
+# Database info
+USER_NAME = 'scrapper'
+USER_PASSWD = 'scrapper'
+DEX_DB = 'DEX'
+SCRAPPER_DB = 'rwscrapper'
+HOSTNAME = 'localhost'
+
+# Cache info
+CACHE_CAPACITY = 3000

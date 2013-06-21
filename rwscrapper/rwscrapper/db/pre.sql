@@ -268,14 +268,15 @@ insert into `Inflections` (`id`, `description`, `shortForm`) values
 (100, 'Articol hotărât', 'ART'),
 (101, 'Articol nehotărât', 'ART'),
 (102, 'N/A', 'NA'),
-(103, 'Substantiv propriu, Nominativ-Acuzativ, singular, nearticulat', 'SC'),
-(104, 'Substantiv propriu, Genitiv-Dativ, singular, nearticulat', 'SC'),
-(105, 'Substantiv propriu, Nominativ-Acuzativ, plural, nearticulat', 'SC'),
-(106, 'Substantiv propriu, Genitiv-Dativ, plural, nearticulat', 'SC'),
-(107, 'Substantiv propriu, Nominativ-Acuzativ, singular, articulat', 'SC'),
-(108, 'Substantiv propriu, Genitiv-Dativ, singular, articulat', 'SC'),
-(109, 'Substantiv propriu, Nominativ-Acuzativ, plural, articulat', 'SC'),
-(110, 'Substantiv propriu, Genitiv-Dativ, plural, articulat', 'SC');
+(103, 'Substantiv propriu, Nominativ-Acuzativ, singular, nearticulat', 'SP'),
+(104, 'Substantiv propriu, Genitiv-Dativ, singular, nearticulat', 'SP'),
+(105, 'Substantiv propriu, Nominativ-Acuzativ, plural, nearticulat', 'SP'),
+(106, 'Substantiv propriu, Genitiv-Dativ, plural, nearticulat', 'SP'),
+(107, 'Substantiv propriu, Nominativ-Acuzativ, singular, articulat', 'SP'),
+(108, 'Substantiv propriu, Genitiv-Dativ, singular, articulat', 'SP'),
+(109, 'Substantiv propriu, Nominativ-Acuzativ, plural, articulat', 'SP'),
+(110, 'Substantiv propriu, Genitiv-Dativ, plural, articulat', 'SP'),
+(111, 'Substantiv propriu, Formă necunoscută', 'SP');
 unlock tables;
 
 
