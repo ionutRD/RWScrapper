@@ -108,3 +108,22 @@ ACRONYM_SUFFIXES = [
     u'-urilor', \
 ]
 
+STRANGE_NGRAMS = [u'vt', u'gg', u'ww', u'kk', u'qq', \
+                  u'xx', u'hh', u'jj', u'tt', u'zz', \
+                  u'vv', u'kp', u'zk', u'qw', u'df', \
+                  u'hz', u'hj', u'jk', u'kj', u'kl', \
+                  u'zx', u'xz', u'vc', u'bv', u'dd', \
+                  u'bb', u'kc', u'yj', u'yg', u'yh', \
+                  u'yz', u'yt', u'yq', u'aa', u'mh', \
+                  u'nh', u'jh', u'xh', u'fh', u'hf', \
+                  u'qh', u'hq', u'tg', u'fg', u'fb', \
+                  u'fm', u'fp', u'pf', u'df', u'fd', \
+                  u'wf', u'wk', u'tf', u'tg', u'tv', \
+                  u'sd', u'sx', u'xs', u'xg', u'cx', \
+                  u'xn', u'xm', u'xp', u'xj', u'xf', \
+                  u'bz', u'cb', u'rr', u'ss', u'pp', \
+                  u'pd', u'ăă', u'șș', u'țț', u'îî', \
+                  u'ââ', u'iiii', u'eee', u'uuu', u'aaa', \
+                  u'by', u'srsc', u'ăa', u'aă', u'âa', u'aâ', \
+                  u'tț', u'șț', u'sț', u'țș', u'tș', u'jș']
+

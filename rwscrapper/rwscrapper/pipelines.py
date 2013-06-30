@@ -6,11 +6,11 @@ from scrapy.exceptions import DropItem
 
 from rwscrapper.settings import *
 from rwscrapper.crawl.textutil import *
-from rwscrapper.romanian_filter import *
-from rwscrapper.tokenizer import *
-from rwscrapper.sentence_processor import *
-from rwscrapper.word_processor import *
-from rwscrapper.word_cache import *
+from rwscrapper.crawl.romanian_filter import *
+from rwscrapper.crawl.tokenizer import *
+from rwscrapper.crawl.sentence_processor import *
+from rwscrapper.crawl.word_processor import *
+from rwscrapper.crawl.word_cache import *
 
 TEXT_NORM_FUNC = normalize_text
 
@@ -40,13 +40,16 @@ class RomanianTextPipeline(object):
     def process_item(self, item, spider):
         item['processed_text'] = prepare_text(item['normalized_text'])
 
-        if  not item['processed_text']:
+        if not item['processed_text']:
             raise DropItem(PROCESSED_TEXT_VOID)
 
         (dia_lack, tri_err, bi_err, uni_err, freq_err, avg_err, total_err) = \
-        romanian_score(item['processed_text'], NO_DIA)
+        romanian_score(item['processed_text'])
 
         if total_err > ROMANIAN_THRESHOLD:
+            raise DropItem(FOREIGN_LANGUAGE_TEXT)
+
+        if dia_lack and not NO_DIA:
             raise DropItem(FOREIGN_LANGUAGE_TEXT)
 
         item['diacritics_lack'] = dia_lack
@@ -55,7 +58,7 @@ class RomanianTextPipeline(object):
         item['uni_err'] = uni_err
         item['freq_err'] = freq_err
         item['avglen_err'] = avg_err
-        item['rou_score'] = total_error
+        item['rou_score'] = total_err
 
         return item
 
@@ -65,7 +68,7 @@ class PhraseSplitterPipeline(object):
     """
     def process_item(self, item, spider):
         item['phrases'] = sentence_tokenizer(item['normalized_text'])
-        if not item
+        if not item:
             raise DropItem(TEXT_CANNOT_BE_SPLITTED)
 
         return item
@@ -75,15 +78,18 @@ class SentenceLevelProcessingPipeline(object):
     Phase #1: Normalize every phrase
     Phase #2: Filter only Romanian phrases
     """
-    for idx in range(len(item['phrases'])):
-        item['phrases'][idx] = sentence_normalization(item['phrases'][idx])
-    if item['rou_score'] < ROMANIAN_THRESHOLD_NO_PHRASE_CHECK:
-        item['phrases'] = filter(romanian_language_filter, item['phrases'])
+    def process_item(self, item, spider):
+        for idx in range(len(item['phrases'])):
+            item['phrases'][idx] = \
+            sentence_normalization(item['phrases'][idx])
+        if item['rou_score'] < ROMANIAN_THRESHOLD_NO_PHRASE_CHECK:
+            item['phrases'] = \
+            filter(romanian_language_filter, item['phrases'])
 
-    if not item['phrases']:
-        raise DropItem(NO_ROMANIAN_PHRASE)
+        if not item['phrases']:
+            raise DropItem(NO_ROMANIAN_PHRASE)
 
-    return item
+        return item
 
 class WordLevelProcessingPipeline(object):
     """
@@ -91,20 +97,22 @@ class WordLevelProcessingPipeline(object):
     Phase #2: Error checking
     Phase #4: Generate suggestions
     """
-    item['words'] = []
-    idx = 0
-    for phrase in item['phrases']:
-        words += word_tokenizer(phrase)
-        for word in words:
-            word.set_phrase(idx)
-        if len(words) > 0:
-            item['words'] += words
-        idx += 1
+    def process_item(self, item, spider):
+        item['words'] = []
+        idx = 0
 
-    if not item['words']:
-        raise DropItem(NO_ROMANIAN_WORDS)
+        for phrase in item['phrases']:
+            words = word_tokenizer(phrase)
+            for word in words:
+                word.set_phrase(idx)
+            if len(words) > 0:
+                item['words'] += words
+            idx += 1
 
-    return item
+        if not item['words']:
+            raise DropItem(NO_ROMANIAN_WORDS)
+
+        return item
 
 class DbCommunicatorPipeline(object):
     def __init__(self):
@@ -118,26 +126,30 @@ class DbCommunicatorPipeline(object):
         self.meta_dex = MetaData(self.db_dex)
         self.meta_rws = MetaData(self.db_rws)
         self.clitic_tokens_tbl = Table('CliticTokens', \
-                                       meta_rws, \
+                                       self.meta_rws, \
                                        autoload = True)
         stmt = select([self.clitic_tokens_tbl.c.form, \
                        self.clitic_tokens_tbl.c.formNoDia])
         rs = stmt.execute()
-        self.cliticTokens = [x[0] for x in rs]
-        self.cliticTokensNoDia = [x[1] for x in rs]
-        self.clitics_tbl = Table('Clitics', meta_rws, autoload = True)
+        self.cliticTokens = []
+        self.cliticTokensNoDia = []
+        for it in rs:
+            self.cliticTokens.append(it[0])
+            self.cliticTokensNoDia.append(it[1])
+        self.clitics_tbl = Table('Clitics', self.meta_rws, autoload = True)
         stmt = select([self.clitics_tbl.c.form, \
                        self.clitics_tbl.c.formNoHyphen, \
                        self.clitics_tbl.c.formNoDia])
         rs = stmt.execute()
-        self.clitics = [x[0] for x in rs]
-        self.cliticsNoHyphen = [x[1] for x in rs]
-        self.cliticsNoDia = [x[2] for x in rs]
+        self.clitics = []
+        self.cliticsNoHyphen = []
+        self.cliticsNoDia = []
+        for it in rs:
+            self.clitics.append(it[0])
+            self.cliticsNoHyphen.append(it[1])
+            self.cliticsNoDia.append(it[2])
+        self.wdict = {}
 
-        self.texts_tbl = Table('Texts', meta_rws, autoload = True)
-        self.phrases_tbl = Table('Phrases', meta_rws, autoload = True)
-        self.words_tbl = Table('Words', meta_rws, autoload = True)
-        self.inflected_forms_tbl = Table('Words', meta_rws, autoload = True)
 
     def has_diacritics(self, word):
         """
@@ -152,31 +164,75 @@ class DbCommunicatorPipeline(object):
         If the word is found in scrapper database 
         Update the timestamp and the number of appearances
         """
-        # Step 1: Search the word in cache
-        if not word.is_proper() and self.cache.find(word):
+        if word.is_proper() and not PROPER:
             return True
 
-        # Step 2: Search the word in DEX
-        if not word.is_proper():
-            infl_form = Table('InflectedForm', meta_dex, autoload = True)
+        # Step 1: If word
+        if len(word) <= WLEN:
+            return True
+
+        # Step 2: Search the word in cache
+        if self.cache.find(word):
+            return True
+
+        # Step 3: Search the word in DEX
+        wtokens = word.get_word().split()
+
+        for wtoken in wtokens:
+            infl_form = Table('InflectedForm', self.meta_dex, autoload = True)
             stmt = select([infl_form.c.formNoAccent], \
-                           infl_form.c.formNoAccent == word)
-            rs = stmt.execute()
+                         (infl_form.c.formNoAccent == wtoken) | \
+                         (infl_form.c.formUtf8General == wtoken))
+            rs = self.conn_dex.execute(stmt)
             sel_words = [x[0] for x in rs]
-            dret = self.has_diacritics(word)
-            if (not dret and len(sel_words) > 0) or (dret and word in sel_words):
-                self.cache.add(word)
+            if len(sel_words) > 0:
                 return True
 
-        # Step 3: Search the word in scrapper database
-        stmt = select([self.inflected_forms_tbl.c.form, \
-                       self.inflected_forms_tbl.c.noApp], \
-                       self.inflected_forms_tbl.c.form == word)
-        rs = stmt.execute()
-        sel_words = [(x[0], x[1]) for x in rs]
-        if word, nr_app in sel_words:
-            # Update the number of appearances
+        # Step 4: Split the word in two, and search each part in dex or cache
+        if u'-' not in word.get_word() and \
+           u' ' not in word.get_word() and \
+           len(word) > WLEN + 2:
+            pair_words = [(word.get_word()[:i], word.get_word()[i:]) for i in range(3,len(word) - 2)]
+            for pw in pair_words:
+                stmt = select([infl_form.c.formNoAccent], \
+                             (infl_form.c.formNoAccent == pw[0]) | \
+                             (infl_form.c.formUtf8General == pw[0]))
+                rs = self.conn_dex.execute(stmt)
+                sel_words0 = [x[0] for x in rs]
 
+                stmt = select([infl_form.c.formNoAccent], \
+                             (infl_form.c.formNoAccent == pw[1]) | \
+                             (infl_form.c.formUtf8General == pw[1]))
+                rs = self.conn_dex.execute(stmt)
+                sel_words1 = [x[0] for x in rs]
+
+                if len(sel_words0) > 0 and len(sel_words1) > 0:
+                    return True
+
+
+        # Step 5: Search the word in scrapper database
+        if  word.get_word() in self.wdict:
+            self.wdict[word.get_word()] += word.get_nr_app()
+
+            # Update the number of appearances
+            upd = update(self.inflected_forms_tbl,
+                         self.inflected_forms_tbl.c.form == word.get_word())
+            self.conn_rws.execute(upd, noApp = self.wdict[word.get_word()])
+            return True
+
+        stmt = select([self.inflected_forms_tbl.c.form, \
+                       self.inflected_forms_tbl.c.noApp],
+                       (self.inflected_forms_tbl.c.form == word.get_word()) | \
+                       (self.inflected_forms_tbl.c.formUtf8General == word.get_word()))
+        rs = self.conn_rws.execute(stmt)
+        sel_words = []
+        for it in rs:
+            sel_words.append((it[0], it[1]))
+        for (w, it) in sel_words:
+            # Update the number of appearances
+            upd = update(self.inflected_forms_tbl,
+                         self.inflected_forms_tbl.c.form == w)
+            self.conn_rws.execute(upd, noApp = it + word.get_nr_app())
             return True
 
         return False
@@ -186,35 +242,60 @@ class DbCommunicatorPipeline(object):
         Check if a word is a clitic
         """
         # Step 1: Check if the word is a clitic itself
-        if word in self.clitics or \
-           word in self.cliticsNoHyphen or \
-           word in self.cliticsNoDia:
+        if word.get_word() in self.clitics or \
+           word.get_word() in self.cliticsNoHyphen or \
+           word.get_word() in self.cliticsNoDia:
             return True
 
         # Step 2: Check if the word contains clitic tokens
-        word_tokens = word.split('-')
+        word_tokens = word.get_word().split('-')
         for token in word_tokens:
             if token in self.cliticTokens or \
                token in self.cliticTokensNoDia:
-            return True
+                return True
 
         return False
 
     def process_item(self, item, spider):
+        self.db_dex = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, DEX_DB))
+        self.db_rws = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, SCRAPPER_DB))
+        self.meta_dex = MetaData(self.db_dex)
+        self.meta_rws = MetaData(self.db_rws)
+        self.conn_dex = self.db_dex.connect()
+        self.conn_rws = self.db_rws.connect()
+
+        self.texts_tbl = Table('Texts', self.meta_rws, autoload = True)
+        self.phrases_tbl = Table('Phrases', self.meta_rws, autoload = True)
+        self.words_tbl = Table('Words', self.meta_rws, autoload = True)
+        self.inflected_forms_tbl = Table('InflectedForms', self.meta_rws, autoload = True)
+
+        item['words'] = list(set(item['words']))
+
         # Find the last text id
         stmt = select([func.max(self.texts_tbl.c.id)])
         rs = stmt.execute()
         last_txt_id = [x[0] for x in rs][0]
+
+        if not last_txt_id:
+            last_txt_id = -1
 
         # Find the last phrase id
         stmt = select([func.max(self.phrases_tbl.c.id)])
         rs = stmt.execute()
         last_phrase_id = [x[0] for x in rs][0]
 
+        if not last_phrase_id:
+            last_phrase_id = -1
+
         # Find the last word id
         stmt = select([func.max(self.words_tbl.c.id)])
         rs = stmt.execute()
         last_word_id = [x[0] for x in rs][0]
+
+        if not last_word_id:
+            last_word_id = -1
+
+        print last_txt_id, last_phrase_id, last_word_id
 
         tbi_words = []
         tbi_phrases = set()
@@ -243,7 +324,7 @@ class DbCommunicatorPipeline(object):
                           createDate = item['timestamp'],
                           noDia = item['diacritics_lack'])
         )
-        result = db_rws.execute(ins)
+        result = self.conn_rws.execute(ins)
 
         text_id = last_txt_id + 1
         crt_phrase_id = last_phrase_id + 1
@@ -255,29 +336,35 @@ class DbCommunicatorPipeline(object):
                               phraseContent = item['phrases'][idx], \
                               romanianScore = item['rou_score'])
             )
-            result = self.db_rws.execute(ins)
-            phrases[idx] = crt_phrase_id
+            result = self.conn_rws.execute(ins)
+            phrases_ids[idx] = crt_phrase_id
             crt_phrase_id += 1
 
         crt_word_id = last_word_id + 1
         for word in tbi_words:
+            if len(self.wdict) < MAX_DICT_CACHE:
+                self.wdict[word.get_word()] = 1
             # Insert the new words in the databse
             ins = self.words_tbl.insert(
-                values = dict(phraseId = phrases_ids[word.get_phrase], \
+                values = dict(phraseId = phrases_ids[word.get_phrase()], \
                               form = word.get_word(), \
                               formUtf8General = word.get_word(), \
-                              reverse = word.get_word()[::-1]
-                              charLength = len(word.get_word())
+                              reverse = word.get_word()[::-1], \
+                              charLength = len(word.get_word()), \
                               createDate = time.time())
                 )
-            result = self.db_rws.execute(ins)
-            ins = self.inflected_forms_tbl(
+            result = self.conn_rws.execute(ins)
+            ins = self.inflected_forms_tbl.insert(
                 values = dict(wordId = crt_word_id, \
                               form = word.get_word(), \
                               formUtf8General = word.get_word(), \
+                              noApp = word.get_nr_app(), \
                               inflectionId = 102)
             )
-            result = self.db_rws.execute(ins)
+            result = self.conn_rws.execute(ins)
             crt_word_id += 1
+
+        self.conn_rws.close()
+        self.conn_dex.close()
 
         return item

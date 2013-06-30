@@ -16,11 +16,16 @@ RWSCRAPPER_DB = 'rwscrapper'
 if __name__ == "__main__":
     db = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, RWSCRAPPER_DB))
     meta_dex = MetaData(db)
-    words_tbl = Table('Texts', meta_dex, autoload=True)
-    #stmt = select([inflected_form.c.formNoAccent], (inflected_form.c.formNoAccent == sys.argv[1]) | (inflected_form.c.formUtf8General == sys.argv[1]))
-    #rs = stmt.execute()
-    #for row in rs:
-    #    print row
+    words_tbl = Table('InflectedForms', meta_dex, autoload=True)
+    stmt = select([words_tbl.c.form, words_tbl.c.noApp], (words_tbl.c.form == sys.argv[1]) | (words_tbl.c.formUtf8General == sys.argv[1]))
+    rs = stmt.execute()
+    l1 = []
+    l2 = []
+    for x in rs:
+        l1.append(x[0])
+        l2.append(x[1])
+    print l1
+    print l2
     #ins = words_tbl.insert(
     #    values=dict(url='www.google.com',\
     #                  canonicalUrl = 'www.google.com', \
@@ -35,7 +40,7 @@ if __name__ == "__main__":
     #                  createDate = time.time())
     #)
     #result = db.execute(ins)
-    stmt = select([func.max(words_tbl.c.id)])
-    rs = stmt.execute()
-    print [x[0] for x in rs][0]
+    #stmt = select([func.max(words_tbl.c.id)])
+    #rs = stmt.execute()
+    #print [x[0] for x in rs][0]
 

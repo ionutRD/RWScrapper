@@ -58,11 +58,17 @@ class Word:
     def __len__(self):
         return len(self._word)
 
+    def __eq__(self, other):
+        return self._word == other._word
+
+    def __hash__(self):
+        return hash(self._word)
+
     def get_word(self):
         return self._word
 
     def get_nr_app(self):
-        return _nr_app
+        return self._nr_app
 
     def get_prefix(self):
         return self._prefix
@@ -134,6 +140,34 @@ def word_filter(word):
 
     return True
 
+def post_word_filter(word):
+    """
+    Perform a final filter on words
+    """
+    if word.get_word().startswith('\'') or word.get_word().startswith('-') or \
+       word.get_word().endswith('\'') or word.get_word().endswith('-'):
+        return False
+
+    wtokens = word.get_word().split()
+    if len(wtokens) > 4:
+        return False
+    for wtoken in wtokens:
+        caps = [x for x in wtoken if x.isupper()]
+        if len(caps) > 1 and word.is_proper():
+            return False
+        elif len(caps) > 0 and not word.is_proper():
+            return False
+        elif wtoken.endswith('-lea') or \
+             wtoken.endswith('-a'):
+            return False
+
+    if not word.is_proper():
+        for bigram in STRANGE_NGRAMS:
+            if bigram in word.get_word():
+                return False
+
+    return True
+
 def spellchecker(word):
     """
     Correct misspelled â/î
@@ -181,6 +215,10 @@ def word_tokenizer(sentence):
     Tokenize the sentence to obtain a list of words
     """
     words = re.split(WORD_SEP, sentence)
+    words = filter(lambda x : x != u'', words)
+
+    if not words:
+        return []
 
     # Eliminate starting capital letter words
     idx = 0
@@ -250,9 +288,12 @@ def word_tokenizer(sentence):
 
         word_list.append(new_word)
 
+    word_list = filter(post_word_filter, word_list)
+
     return word_list
 
 if __name__ == "__main__":
+    '''
     txt = u'În principiu un NAP este o sală plină cu rutere, cel puțin unul pentru fiecare backbone conectat. O rețea locală conectează toate aceste rutere astfel încât pachetele să poată fi retransmise rapid din orice coloană în orice alta. În afară de conectarea în NAP-uri, backbone-urile de dimensiuni mari au numeroase conexiuni directe între ruterele lor, tehnică numită conectare privată (private peering).'
     words = word_tokenizer(txt)
     for word in words:
@@ -285,6 +326,12 @@ if __name__ == "__main__":
     print '--------------------------------------------------'
 
     txt = u'Aici se adăpostește mormântul lui Ștefan cel Mare'
+    words = word_tokenizer(txt)
+    for word in words:
+        print word
+    '''
+
+    txt = u'Aici este \'Gologan II-lea cine'
     words = word_tokenizer(txt)
     for word in words:
         print word

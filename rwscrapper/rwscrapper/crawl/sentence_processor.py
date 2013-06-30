@@ -6,7 +6,7 @@ import re
 from romanian_filter import *
 
 LOWER_PERCENT = 0.5
-ROMANIAN_SCORE = 13.8
+ROMANIAN_SCORE = -0.5
 K1 = 14
 K2 = 4.5
 K3 = 65
@@ -43,6 +43,10 @@ def romanian_language_filter(text):
     """
     Decide whether the phrase is in romanian or not
     """
+
+    if len(text) == 0:
+        return False
+
     rtext = prepare_text(text)
 
     # Diacritics score
@@ -78,10 +82,10 @@ def romanian_language_filter(text):
         tri_err = ngram_score(tri_dict, TRIGRAM_DICT)
         freq_err = ngram_score(freq_words, RO_FREQ_DICT_NO_DIA)
 
-    print 'freq_err: ', freq_err, 'bi_err: ', bi_err, 'tri_err: ', tri_err, 'dia_score: ', diacritics_score, 'rare_score: ', rare_char_score, 'dc: ', double_consonant, 'quote_freq', quote_freq
+    #print 'freq_err: ', freq_err, 'bi_err: ', bi_err, 'tri_err: ', tri_err, 'dia_score: ', diacritics_score, 'rare_score: ', rare_char_score, 'dc: ', double_consonant, 'quote_freq', quote_freq
 
     score = (tri_err * K1 + diacritics_score * K3 + rare_char_score * K4 + freq_err * K5 + double_consonant * K6 + quote_freq * K7)
-    print 'score: ', score
+    #print 'score: ', score
     return score > ROMANIAN_SCORE
 
 def sentence_normalization(text):

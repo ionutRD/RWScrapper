@@ -54,7 +54,16 @@ SCRAPPER_DB = 'rwscrapper'
 HOSTNAME = 'localhost'
 
 # Cache info
-CACHE_CAPACITY = 3000
+CACHE_CAPACITY = 10000
 
 # Reject no diacritic texts
-NO_DIA = True
+NO_DIA = False
+
+# Minimum word length
+WLEN = 3
+
+# Reject proper names:
+PROPER = True
+
+# Maximum dict cache
+MAX_DICT_CACHE = 100000

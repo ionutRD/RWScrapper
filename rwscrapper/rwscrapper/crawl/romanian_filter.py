@@ -57,6 +57,8 @@ def unigram_from_file(fname):
                     ndict[char] += 1
                     total += 1
         fh.close()
+        if total == 0:
+            return dict()
         for ngram in ndict:
             ndict[ngram] /= total
         return ndict
@@ -84,6 +86,8 @@ def ngram_from_file(fname, n):
                     ndict[ngram] = 1
                 total += 1
         fh.close()
+        if  total == 0:
+            return dict()
         for ngram in ndict:
             ndict[ngram] /= total
         return ndict
@@ -110,6 +114,8 @@ def freq_words_from_file(fname):
                 wdict[word] = 1
             total += 1
         fh.close()
+        if total == 0:
+            return dict()
         for word in wdict:
             wdict[word] /= total
         return wdict
@@ -130,6 +136,8 @@ def avg_words_len_from_file(fname):
         for line in fh:
             sumtotal += len(line[:-1])
             numwords += 1
+        if numwords == 0:
+            return 0
         return sumtotal / numwords
     except IOError:
         return 0
@@ -219,6 +227,8 @@ def unigram_from_text(text):
 
         ndict = {}
 
+        if len_no_space == 0:
+            return dict()
         for char in RO_CHRS:
             ndict[char] = \
             len([c for c in txt_no_space if c == char]) / len_no_space
@@ -246,6 +256,8 @@ def ngram_from_text(utext, n):
                 except KeyError:
                     ndict[ngram] = 1
                 total += 1
+        if total == 0:
+            return dict()
         for ngram in ndict:
             ndict[ngram] /= total
         return ndict
@@ -266,6 +278,8 @@ def freq_words_from_text(text):
             except KeyError:
                 wdict[word] = 1
 
+        if nwords == 0:
+            return dict()
         for word in wdict:
             wdict[word] /= nwords
 
@@ -281,6 +295,8 @@ def avg_words_len(text):
         words = text.split(' ')
         nwords = len(words)
         avg = 0
+        if nwords == 0:
+            return 0;
         for word in words:
             avg += len(word) / nwords
 
@@ -305,7 +321,7 @@ def relative_ngram_error(d1, d2):
     return sumtotal
 
 
-def romanian_score(text, no_dia_flag):
+def romanian_score(text):
     """
     Calculate the romanian language score for an input text
     """
@@ -337,9 +353,6 @@ def romanian_score(text, no_dia_flag):
         tri_err = relative_ngram_error(tri_dict, TRIGRAM_DICT)
         freq_err = relative_ngram_error(RO_FREQ_DICT, freq_words)
         bonus = BONUS
-
-    elif no_dia_flag:
-        return float(inf)
     else:
         uni_err = relative_ngram_error(uni_dict, UNIGRAM_DICT_NO_DIA)
         bi_err = relative_ngram_error(bi_dict, BIGRAM_DICT_NO_DIA)
@@ -369,7 +382,7 @@ if __name__ == "__main__":
         #for ngram in ndict:
         #    print >>fh, ngram, ' ', ndict[ngram]
         #fh.close
-        print avg_words_len_from_file(RO_BASE_NO_DIA)
+        #print avg_words_len_from_file(RO_BASE_NO_DIA)
         #ndict1 = make_ngram_from_text(u'A fost odata ca-n pove\u0219ti a fost ca niciodata din rude mari imparatesti', 3)
         #ndict2 = make_ngram_from_text(u'Once upon a time my name was John', 3)
         #print relative_ngram_error(ndict1, ndict2)

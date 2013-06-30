@@ -52,5 +52,8 @@ class RWScrapperItem(Item):
     # Text phrases
     phrases = Field()
 
+    # Words
+    words = Field()
+
     # Timestamp
     timestamp = Field()
