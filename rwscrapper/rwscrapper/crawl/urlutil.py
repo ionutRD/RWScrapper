@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Function used to process urls
 """

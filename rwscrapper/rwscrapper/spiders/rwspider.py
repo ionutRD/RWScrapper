@@ -4,7 +4,7 @@ Module responsible for downloading the html content
 import os
 import tempfile
 import threading
-from datetime import datetime
+import time
 
 from rwscrapper.settings import *
 from rwscrapper.crawl.urlutil import *
@@ -14,8 +14,6 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.selector import HtmlXPathSelector
 
 HTML_TO_TEXT_XPATH = "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]"
-
-spider_lock = threading.Lock()
 
 class RWSpider(CrawlSpider):
     """
@@ -48,14 +46,8 @@ class RWSpider(CrawlSpider):
         item['raw_text'] = ''.join(hxs.select(HTML_TO_TEXT_XPATH).extract())
         item['url'] = str(response.url)
         item['canonical_url'] = canonize_url(item['url'])
-        item['timestamp'] = datetime.now()
-        spider_lock.acquire()
-        try:
-            item['total_pages'] += 1
-        except KeyError:
-            item['total_pages'] = 0
-        finally:
-            spider_lock.release()
+        item['timestamp'] = time.time()
+        item['file_type'] = 0
         items.append(item)
         return items
 
@@ -76,13 +68,8 @@ class RWSpider(CrawlSpider):
                 return []
             item['url'] = str(response.url)
             item['canonical_url'] = canonize_url(item['url'])
-            item['timestamp'] = datetime.now()
-            try:
-                item['total_pages'] += 1
-            except KeyError:
-                item['total_pages'] = 0
-            finally:
-                spider_lock.release()
+            item['timestamp'] = time.time()
+            item['file_type'] = 1
             os.unlink(file_handle.name)
             return items
         except IOError:
@@ -97,12 +84,7 @@ class RWSpider(CrawlSpider):
         item['raw_text'] = response.body
         item['url'] = str(respose.url)
         item['canonical_url'] = canonize_url(item['url'])
-        item['timestamp'] = datetime.now()
-        try:
-            item['total_pages'] += 1
-        except KeyError:
-            item['total_pages'] = 0
-        finally:
-            spider_lock.release()
+        item['timestamp'] = time.time()
+        item['file_type'] = 2
         item.append(item)
         return items

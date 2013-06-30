@@ -2,287 +2,39 @@
 
 from __future__ import division
 import re
+from sqlalchemy import *
 
-ALLOWED_CHARSET = u' -\'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzĂăÂâȘșȚțÎîÃãẼẽĨĩÕõŨũỸỹÑñǍǎĚěǏǐǑǒǓǔŠšŤťȞȟĽľŇňŽžČčĎďŘřǨǩǙǚÊêÎîÔôÛûŶŷĴĵĈĉĤĥẐẑŜŝĔĕŎŏĬĭŬŭĞğÅåŮůĄąĘęĮįǪǫŲųßĐđŁłÀàÈèÌìÒòÙùỲỳẀẁȦȧĖėİıȮȯẆẇṖṗṘṙṄṅṀṁṪṫḊḋḞḟĠġḢḣȷĿŀḂḃŻżṠṡĊċÁáÉéÍíÓóÚúÝýŃńÇçŔŕŚśŹźḾḿĹĺḰḱǴǵẂẃǗǘŰűŐőÄäËëÏïÖöÜüŸÿẄẅẌẍŖŗŞşŢţḐḑĢģĻļÇçŅņȨȩḨḩ'
+from textconstants import *
 
-SEP = ur'\s|!|\?|;|,|\.|\(|\)|\[|\]|\{|\}|\^|~|#|\*|\+|/|<|>|:|"|”|„|§|©|€'
+USER_NAME = 'scrapper'
+USER_PASSWD = 'scrapper'
+DEX_DB = 'DEX'
+SCRAPPER_DB = 'rwscrapper'
+HOSTNAME = 'localhost'
+
+# RWscrapper database engine
+DB_ENGINE = create_engine('mysql://{0}:{1}@{2}/{3}?charset=utf8'.format(USER_NAME, USER_PASSWD, HOSTNAME, SCRAPPER_DB))
+META = MetaData(DB_ENGINE)
+
+def get_all_entries(table_name):
+    """
+    Retrieve all prefixes from database
+    """
+    tbl = Table(table_name, META, autoload=True)
+    stmt = select([tbl.c.form])
+    rs = stmt.execute()
+    return [x[0] for x in rs]
+
+# All prefixes
+PREFIXES = get_all_entries('Prefixes')
+
+# All suffixes
+SUFFIXES = get_all_entries('Suffixes')
 
 MIN_WLEN = 3
 DIA_MIN_WLEN = 5
 SUFFIX_LEN = 2
 PREFIX_LEN = 2
-
-ROU_CHARS = u'șțăîâȘȚĂÎÂ'
-LOAN_CHARS = u'ÃãǍǎÅåĄąÀàȦȧÁáÄäḂḃČčĈĉĊċĆćÇçĐđĎďḊḋḐḑẼẽĚěÊêĔĕĘęÈèĖėÉéËëȨȩḞḟĜĝǦǧĞğĠġǴǵĢģĤĥȞȟḢḣḦḧḨḩĨĩǏǐÎîĬĭĮįÌìİıÍíÏïĴĵǨǩḰḱĶķŁłĽľĿŀĹĺĻļṀṁḾḿÑñŇňǸǹṄṅŃńŅņÕõǑǒÔôŎŏǪǫÒòȮȯÓóŐőÖöṖṗṔṕẪầŘřṘṙŔŕŖŗŠšŜŝṠṡŚśŞşŤťṪṫŢţŨũǓǔÛûŬŭŮůŲųÙùÚúŰűÜüṼṽǙǚǛǜǗǘŴŵẀẁẆẇẂẃẄẅẊẋẌẍỸỹŶŷỲỳẎẏÝýŸÿŽžẐẑŻżŹźß'
-
-PREFIXES = [
-        u'an', \
-        u'ab', \
-        u'ambi', \
-        u'ante', \
-        u'anti', \
-        u'anto', \
-        u'antre', \
-        u'antropo', \
-        u'arhi', \
-        u'atot', \
-        u'auto', \
-        u'avan', \
-        u'bine', \
-        u'bio', \
-        u'centri', \
-        u'co', \
-        u'contra', \
-        u'crono', \
-        u'cvasi', \
-        u'dez', \
-        u'dis', \
-        u'diz', \
-        u'des', \
-        u'de', \
-        u'di', \
-        u'demo', \
-        u'dia', \
-        u'echi', \
-        u'endo', \
-        u'exo', \
-        u'extra', \
-        u'entero', \
-        u'entomo', \
-        u'epi', \
-        u'eso', \
-        u'eu', \
-        u'euro', \
-        u'filo', \
-        u'fito', \
-        u'geronto', \
-        u'heli', \
-        u'hemi', \
-        u'semi', \
-        u'helio', \
-        u'hemo', \
-        u'hetero', \
-        u'etero', \
-        u'hidro', \
-        u'higro', \
-        u'hiper', \
-        u'hipo', \
-        u'holo', \
-        u'homo', \
-        u'homeo', \
-        u'omo', \
-        u'homi', \
-        u'infra', \
-        u'ultra', \
-        u'inter', \
-        u'între', \
-        u'intra', \
-        u'intro', \
-        u'extra', \
-        u'extro', \
-        u'izo', \
-        u'iso', \
-        u'mega', \
-        u'melo', \
-        u'meta', \
-        u'micro', \
-        u'multi', \
-        u'poli', \
-        u'pluri', \
-        u'nano', \
-        u'ne', \
-        u'non', \
-        u'neo', \
-        u'paleo', \
-        u'novo', \
-        u'oligo', \
-        u'omni', \
-        u'orto', \
-        u'para', \
-        u'pan', \
-        u'pato', \
-        u'peri', \
-        u'petro', \
-        u'post', \
-        u'pre', \
-        u'prea', \
-        u'pro', \
-        u'proto', \
-        u'pseudo', \
-        u'psiho', \
-        u'psihro', \
-        u'quasi', \
-        u'radio', \
-        u'rău', \
-        u'răs', \
-        u'răz', \
-        u're', \
-        u'retro', \
-        u'sin', \
-        u'sim', \
-        u'sine', \
-        u'sino', \
-        u'supra', \
-        u'sub', \
-        u'super', \
-        u'stră', \
-        u'trans', \
-        u'mono', \
-        u'uni', \
-        u'bi', \
-        u'di', \
-        u'tri', \
-        u'cvadri', \
-        u'tetra', \
-        u'penta', \
-        u'hexa', \
-        u'sexa', \
-        u'septen', \
-        u'octo', \
-        u'deca', \
-        u'miria', \
-]
-
-ACRONYM_SUFFIXES = [
-        u'-ul', \
-        u'-uri', \
-        u'-ului', \
-        u'-urile', \
-        u'-urilor', \
-]
-
-SUFFIXES = [
-    u'agiu', \
-    u'egiu', \
-    u'ugiu', \
-    u'aj', \
-    u'ej', \
-    u'iune', \
-    u'ie', \
-    u'iciu', \
-    u'uri', \
-    u'abil', \
-    u'ibil', \
-    u'ubil', \
-    u'bil', \
-    u'ace', \
-    u'aie', \
-    u'țial', \
-    u'țional', \
-    u'ean', \
-    u'andru', \
-    u'ian', \
-    u'an', \
-    u'ant', \
-    u'ent', \
-    u'anță', \
-    u'ență', \
-    u'ință', \
-    u'ar', \
-    u'al', \
-    u'ard', \
-    u'are', \
-    u'ire', \
-    u'ere', \
-    u'arh', \
-    u'arhie', \
-    u'at', \
-    u'et', \
-    u'it', \
-    u'ut', \
-    u'atru', \
-    u'ație', \
-    u'autică', \
-    u'eutică', \
-    u'ază', \
-    u'eză', \
-    u'iză', \
-    u'bilitate', \
-    u'cefal', \
-    u'ces', \
-    u'cid', \
-    u'crat', \
-    u'crație', \
-    u'cron', \
-    u'cul', \
-    u'culă', \
-    u'dinte', \
-    u'ea', \
-    u'eag', \
-    u'iag', \
-    u'og', \
-    u'eală', \
-    u'ean', \
-    u'ee', \
-    u'enie', \
-    u'esc', \
-    u'ește', \
-    u'estru', \
-    u'et', \
-    u'ime', \
-    u'tate', \
-    u'tură', \
-    u'at', \
-    u'etă', \
-    u'et', \
-    u'ețe', \
-    u'eu', \
-    u'fag', \
-    u'vor', \
-    u'fer', \
-    u'fil', \
-    u'filie', \
-    u'fob', \
-    u'fon', \
-    u'fonie', \
-    u'form', \
-    u'fug', \
-    u'gen', \
-    u'genie', \
-    u'graf', \
-    u'grafie', \
-    u'scopie', \
-    u'ibilitate', \
-    u'ic', \
-    u'ier', \
-    u'ieră', \
-    u'il', \
-    u'im', \
-    u'in', \
-    u'iot', \
-    u'ire', \
-    u'ism', \
-    u'ist', \
-    u'lniță', \
-    u'rniță', \
-    u'iș', \
-    u'iște', \
-    u'itudine', \
-    u'iță', \
-    u'uță', \
-    u'iv', \
-    u'log', \
-    u'gie', \
-    u'mânt', \
-    u'morf', \
-    u'nic', \
-    u'nim', \
-    u'onim', \
-    u'oar', \
-    u'uar', \
-    u'oare', \
-    u'oriu', \
-    u'or', \
-    u'os', \
-    u'țional', \
-    u'țial', \
-    u'tură', \
-    u'ui', \
-    u'ual', \
-    u'uu', \
-
-
-]
 
 class Word:
     """
@@ -428,7 +180,7 @@ def word_tokenizer(sentence):
     """
     Tokenize the sentence to obtain a list of words
     """
-    words = re.split(SEP, sentence)
+    words = re.split(WORD_SEP, sentence)
 
     # Eliminate starting capital letter words
     idx = 0
@@ -525,6 +277,14 @@ if __name__ == "__main__":
     print '--------------------------------------------------'
 
     txt = u'Societatea gălăţeană a reprezentat companiile europene la forumul anual al constructorilor şi echipamentelor navale * Rolls-Royce, Mitsubishi, Samsung s-au aflat printre greii alături de care s-a discutat despre viitorul industriei navale mondiale * Navele specializate, culoarul de producţie pentru constructorii gălăţeni'
+    words = word_tokenizer(txt)
+    for word in words:
+        print word
+
+
+    print '--------------------------------------------------'
+
+    txt = u'Aici se adăpostește mormântul lui Ștefan cel Mare'
     words = word_tokenizer(txt)
     for word in words:
         print word

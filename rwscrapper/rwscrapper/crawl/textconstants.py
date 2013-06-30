@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Global constants
 SMALL_S_CEDILLA = u'\u015f'
 CAPITAL_S_CEDILLA = u'\u015e'
@@ -84,3 +86,25 @@ TRANSTAB = {ord(u'\t') : UNICODE_WSPACE, \
             ord(u'\r') : None, \
             ord(u'\a') : None, \
             ord(u'\b') : None}
+
+# Allowed character set
+ALLOWED_CHARSET = u' -\'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZzĂăÂâȘșȚțÎîÃãẼẽĨĩÕõŨũỸỹÑñǍǎĚěǏǐǑǒǓǔŠšŤťȞȟĽľŇňŽžČčĎďŘřǨǩǙǚÊêÎîÔôÛûŶŷĴĵĈĉĤĥẐẑŜŝĔĕŎŏĬĭŬŭĞğÅåŮůĄąĘęĮįǪǫŲųßĐđŁłÀàÈèÌìÒòÙùỲỳẀẁȦȧĖėİıȮȯẆẇṖṗṘṙṄṅṀṁṪṫḊḋḞḟĠġḢḣȷĿŀḂḃŻżṠṡĊċÁáÉéÍíÓóÚúÝýŃńÇçŔŕŚśŹźḾḿĹĺḰḱǴǵẂẃǗǘŰűŐőÄäËëÏïÖöÜüŸÿẄẅẌẍŖŗŞşŢţḐḑĢģĻļÇçŅņȨȩḨḩ'
+
+# Loan character set
+LOAN_CHARS = u'ÃãǍǎÅåĄąÀàȦȧÁáÄäḂḃČčĈĉĊċĆćÇçĐđĎďḊḋḐḑẼẽĚěÊêĔĕĘęÈèĖėÉéËëȨȩḞḟĜĝǦǧĞğĠġǴǵĢģĤĥȞȟḢḣḦḧḨḩĨĩǏǐÎîĬĭĮįÌìİıÍíÏïĴĵǨǩḰḱĶķŁłĽľĿŀĹĺĻļṀṁḾḿÑñŇňǸǹṄṅŃńŅņÕõǑǒÔôŎŏǪǫÒòȮȯÓóŐőÖöṖṗṔṕẪầŘřṘṙŔŕŖŗŠšŜŝṠṡŚśŞşŤťṪṫŢţŨũǓǔÛûŬŭŮůŲųÙùÚúŰűÜüṼṽǙǚǛǜǗǘŴŵẀẁẆẇẂẃẄẅẊẋẌẍỸỹŶŷỲỳẎẏÝýŸÿŽžẐẑŻżŹźß'
+
+# Romanian specific characters
+ROU_CHARS = u'șțăîâȘȚĂÎÂ'
+
+# Word separators
+WORD_SEP = ur'\s|!|\?|;|,|\.|\(|\)|\[|\]|\{|\}|\^|~|#|\*|\+|/|<|>|:|"|”|„|§|©|€'
+
+# Acronym suffixes
+ACRONYM_SUFFIXES = [
+    u'-ul', \
+    u'-uri', \
+    u'-ului', \
+    u'-urile', \
+    u'-urilor', \
+]
+

@@ -31,7 +31,7 @@ ITEM_PIPELINES = [
     'rwscrapper.pipelines.PhraseSplitterPipeline', \
     'rwscrapper.pipelines.SentenceLevelProcessingPipeline', \
     'rwscrapper.pipelines.WordLevelProcessingPipeline', \
-    'rwscrapper.pipelines.JSONTestPipeline', \
+    'rwscrapper.pipelines.DbCommunicatorPipeline', \
 ]
 
 # Warning messages
@@ -40,6 +40,7 @@ PROCESSED_TEXT_VOID = "Item dropped due to processed text void"
 FOREIGN_LANGUAGE_TEXT = "Item dropped: The text is in other language"
 TEXT_CANNOT_BE_SPLITTED = "Item dropped: The text cannot be splitted"
 NO_ROMANIAN_PHRASE = "Item dropped: No romanian phrase found"
+NO_NEW_WORD = 'Item dropped: No new words found'
 
 # Scores
 ROMANIAN_THRESHOLD = 1.78
@@ -54,3 +55,6 @@ HOSTNAME = 'localhost'
 
 # Cache info
 CACHE_CAPACITY = 3000
+
+# Reject no diacritic texts
+NO_DIA = True

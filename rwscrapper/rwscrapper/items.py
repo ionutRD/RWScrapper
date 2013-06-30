@@ -3,18 +3,18 @@ Represent a downloaded content
 """
 from scrapy.item import Item, Field
 
-
-
 class RWScrapperItem(Item):
     """
     Page raw text
     """
-
     # Initial raw text
     raw_text = Field()
 
     # Normalized text
     normalized_text = Field()
+
+    # File type
+    file_type = Field()
 
     # Processed text
     processed_text = Field()
@@ -30,12 +30,6 @@ class RWScrapperItem(Item):
 
     # Timestamp
     timestamp = Field()
-
-    # Total pages
-    total_pages = Field()
-
-    # Normalized pages
-    normalized_pages = Field()
 
     # Trigram error
     tri_err = Field()
@@ -57,3 +51,6 @@ class RWScrapperItem(Item):
 
     # Text phrases
     phrases = Field()
+
+    # Timestamp
+    timestamp = Field()

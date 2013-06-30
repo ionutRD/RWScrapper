@@ -305,7 +305,7 @@ def relative_ngram_error(d1, d2):
     return sumtotal
 
 
-def romanian_score(text):
+def romanian_score(text, no_dia_flag):
     """
     Calculate the romanian language score for an input text
     """
@@ -338,6 +338,8 @@ def romanian_score(text):
         freq_err = relative_ngram_error(RO_FREQ_DICT, freq_words)
         bonus = BONUS
 
+    elif no_dia_flag:
+        return float(inf)
     else:
         uni_err = relative_ngram_error(uni_dict, UNIGRAM_DICT_NO_DIA)
         bi_err = relative_ngram_error(bi_dict, BIGRAM_DICT_NO_DIA)
