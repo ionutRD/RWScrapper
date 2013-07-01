@@ -296,6 +296,7 @@ class DbCommunicatorPipeline(object):
             last_word_id = -1
 
         print last_txt_id, last_phrase_id, last_word_id
+        print item['canonical_url']
 
         tbi_words = []
         tbi_phrases = set()

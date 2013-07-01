@@ -29,7 +29,8 @@ class RWSpider(CrawlSpider):
                                            '.*\.pl', \
                                            '.*\.asp', \
                                            '.*\.aspx', \
-                                           '.*\.php', )), \
+                                           '.*\.php', \
+                                           '.*')), \
              callback='parse_html', follow=True), \
              Rule(SgmlLinkExtractor(allow=('.*\.pdf', )), \
              callback='parse_pdf', follow=False), \
