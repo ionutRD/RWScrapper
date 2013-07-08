@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^index.html$', wordui.views.noforms, name='index.html'),
     url(r'^newwords.html$', wordui.views.inflectedformslower, name = 'newwords.html'),
     url(r'^propernames.html$', wordui.views.inflectedformsupper, name = 'propernames.html'),
+    url(r'^word_ok.html$', wordui.views.noforms, name = 'word_ok.html'),
     url('wid/(\d+)/', wordui.views.edit_word, name='word_detail.html')
 )
 

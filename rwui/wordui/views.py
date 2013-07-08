@@ -9,8 +9,8 @@ from wordui.models import Inflectedforms, Words, Phrases, Texts, Domains, Prefix
 from wordui.tables import InflectedformsTable
 from wordui.forms import InflectedformsForm
 from wordui.forms import WordsForm
-from wordui.forms import WordFormSet
 from django.forms.models import modelformset_factory
+from django.forms.models import model_to_dict
 
 def inflectedformslower(request):
     values = Inflectedforms.objects.distinct().values('id', 'form', 'noapp')
@@ -29,41 +29,25 @@ def inflectedformsupper(request):
 def noforms(request):
     return render(request, "index.html", {})
 
-def edit_word00(request, context):
-    wid = int(request.path.split('/')[2])
-    ifobject = Inflectedforms.objects.get(id  = wid)
-    table = InflectedformsTable([ifobject])
-    RequestConfig(request).configure(table)
-    return render(request, "word_detail.html", {'table' : table})
-
-
-def edit_word01(request, context):
-    if request.method == 'POST':
-        form = InflectedForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect('/word_detail.html')
-    else:
-        ifobject = Inflectedforms.objects.get(id = int(request.path.split('/')[2]))
-        wordobject = ifobject.wordid
-        form = WordFormSet(instance = wordobject)
-        return render_to_response("word_detail.html", \
-                                  {'form' : form,}, \
-                                  context_instance = RequestContext(request),)
-
 def edit_word(request, context):
+    ifobj = Inflectedforms.objects.get(id = int(request.path.split('/')[2]))
+    wordobj = ifobj.wordid
     if request.method == 'POST':
-        form = InflectedForm(request.POST)
-        if form.is_valid():
-            return HttpResponseRedirect('/word_detail.html')
+        ifform = InflectedformsForm(request.POST, instance = ifobj)
+        wordform = WordsForm(request.POST, instance = wordobj)
+        if ifform.is_valid() and wordform.is_valid:
+            ifobj = ifform.save(commit = False)
+            wordobj = wordform.save(commit = False)
+            ifobj.save()
+            wordobj.save()
+            return HttpResponseRedirect('/word_ok.html')
     else:
-        ifmodel = modelformset_factory(Inflectedforms, form = InflectedformsForm)
-        wmodel = modelformset_factory(Words, form = WordsForm)
+        worddict = model_to_dict(wordobj)
+        worddict['phrase'] = wordobj.phraseid.phrasecontent
+        worddict['url'] = wordobj.phraseid.textid.canonicalurl
 
-        ifobject = Inflectedforms.objects.get(id = int(request.path.split('/')[2]))
-        wordobject = ifobject.wordid
-
-        ifform = ifmodel(instance = ifobject)
-        wform = wmodel(instance = wordobject)
+        ifform = InflectedformsForm(instance = ifobj)
+        wform = WordsForm(initial = worddict)
         return render_to_response("word_detail.html", \
                                   {'ifform' : ifform, 'wform' : wform}, \
                                   context_instance = RequestContext(request),)
