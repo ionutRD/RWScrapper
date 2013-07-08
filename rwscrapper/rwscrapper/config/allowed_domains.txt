@@ -35,7 +35,7 @@
 #antena3.ro
 #primatv.ro
 #hotnews.ro
-mediafax.ro
+#mediafax.ro
 #catavencu.ro
 #cotidianul.ro
 #kanald.ro
